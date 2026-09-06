@@ -109,5 +109,9 @@
         ]
       }
     ]
+  },
+  "logo": {
+    "light": "https://www.promptbank.club/brand/promptbank-mark-black-transparent.png",
+    "dark": "https://www.promptbank.club/brand/promptbank-mark-white-transparent.png"
   }
 }
