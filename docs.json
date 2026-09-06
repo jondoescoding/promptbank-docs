@@ -3,9 +3,9 @@
   "name": "Prompt Bank",
   "theme": "luma",
   "colors": {
-    "primary": "#ef7025",
-    "light": "#eec9bc",
-    "dark": "#4fa1ab"
+    "primary": "#ffff00",
+    "light": "#767600",
+    "dark": "#ffff00"
   },
   "favicon": "/favicon.svg",
   "navbar": {
