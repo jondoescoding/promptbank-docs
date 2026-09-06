@@ -1,5 +1,5 @@
 ---
-title: "GET /api/v1/api-keys — List Your API Keys"
+title: "GET /api/v1/api-keys — List All API Keys for Your Account"
 sidebarTitle: "List Keys"
 description: "GET /api/v1/api-keys — list all API keys for your account. Browser session required. Returns metadata only — never the raw key values."
 ---
@@ -53,28 +53,31 @@ The response is an array of `ApiKey` objects.
 ## Example Response
 
 ```json
-[
-  {
-    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-    "name": "Production API Key",
-    "keyPrefix": "pb_live_f47a",
-    "scopes": ["prompts:read", "prompts:write"],
-    "lastUsedAt": "2024-06-10T14:23:01Z",
-    "revokedAt": null,
-    "expiresAt": null,
-    "createdAt": "2024-05-01T09:00:00Z"
-  },
-  {
-    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "name": "Read-only CI Key",
-    "keyPrefix": "pb_live_a1b2",
-    "scopes": ["prompts:read"],
-    "lastUsedAt": "2024-06-09T08:45:12Z",
-    "revokedAt": "2024-06-10T16:00:00Z",
-    "expiresAt": null,
-    "createdAt": "2024-04-15T12:30:00Z"
-  }
-]
+{
+  "data": [
+    {
+      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "name": "Production API Key",
+      "keyPrefix": "pb_live_f47a",
+      "scopes": ["prompts:read", "prompts:write"],
+      "lastUsedAt": "2024-06-10T14:23:01Z",
+      "revokedAt": null,
+      "expiresAt": null,
+      "createdAt": "2024-05-01T09:00:00Z"
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Read-only CI Key",
+      "keyPrefix": "pb_live_a1b2",
+      "scopes": ["prompts:read"],
+      "lastUsedAt": "2024-06-09T08:45:12Z",
+      "revokedAt": "2024-06-10T16:00:00Z",
+      "expiresAt": null,
+      "createdAt": "2024-04-15T12:30:00Z"
+    }
+  ],
+  "error": null
+}
 ```
 
 <Note>

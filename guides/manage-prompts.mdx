@@ -29,22 +29,23 @@ curl -X POST https://www.promptbank.club/api/v1/prompts \
 
 </CodeGroup>
 
-The API returns the full prompt object:
+The API returns the full prompt object wrapped in the standard response envelope:
 
 ```json
 {
-  "id": "pmt_01hxyz1111aaaa2222bbbb",
-  "title": "Blog post intro writer",
-  "prompt": "Write a compelling opening paragraph for a blog post about {topic}. Use an engaging hook, establish the problem the reader faces, and end with a clear transition into the body of the post. Tone: conversational and informative.",
-  "promptType": "text",
-  "modelId": null,
-  "aspectRatio": null,
-  "platform": null,
-  "imageUrl": null,
-  "referenceMediaUrls": [],
-  "vaultId": "vlt_general_01hxyz0000",
-  "createdAt": "2024-11-15T09:00:00Z",
-  "updatedAt": "2024-11-15T09:00:00Z"
+  "data": {
+    "id": 1001,
+    "title": "Blog post intro writer",
+    "prompt": "Write a compelling opening paragraph for a blog post about {topic}. Use an engaging hook, establish the problem the reader faces, and end with a clear transition into the body of the post. Tone: conversational and informative.",
+    "promptType": "text",
+    "platform": null,
+    "status": "active",
+    "images": [],
+    "vaultIds": [],
+    "createdAt": "2024-11-15T09:00:00Z",
+    "updatedAt": "2024-11-15T09:00:00Z"
+  },
+  "error": null
 }
 ```
 
@@ -52,7 +53,7 @@ The API returns the full prompt object:
 
 <Step title="Create an image prompt">
 
-Image prompts target a specific model and can carry configuration like `aspectRatio` and `referenceMediaUrls`. Supply a `modelId` to associate this prompt with a fal.ai endpoint:
+Image prompts target a specific model and can carry configuration like `aspectRatio` and `referenceMediaUrls`. The `modelId` field is **required** for `image` and `video` prompt types — it must match the pattern `fal-ai/...`. Supply a `vaultId` (integer) to add the prompt directly to an existing vault:
 
 <CodeGroup>
 
@@ -67,7 +68,7 @@ curl -X POST https://www.promptbank.club/api/v1/prompts \
     "modelId": "fal-ai/recraft/v4.1/text-to-image",
     "aspectRatio": "16:9",
     "platform": "artstation",
-    "vaultId": "vlt_01hxyz9876abcd1234efgh",
+    "vaultId": 42,
     "referenceMediaUrls": [
       "https://cdn.promptbank.club/refs/neon-ref-01.jpg"
     ]
@@ -78,20 +79,19 @@ curl -X POST https://www.promptbank.club/api/v1/prompts \
 
 ```json
 {
-  "id": "pmt_01hxyz9999cccc8888dddd",
-  "title": "Cyberpunk cityscape at dusk",
-  "prompt": "A vast cyberpunk city at dusk, towering neon-lit skyscrapers reflected in rain-soaked streets, volumetric fog, cinematic composition, 8k detail",
-  "promptType": "image",
-  "modelId": "fal-ai/recraft/v4.1/text-to-image",
-  "aspectRatio": "16:9",
-  "platform": "artstation",
-  "imageUrl": null,
-  "referenceMediaUrls": [
-    "https://cdn.promptbank.club/refs/neon-ref-01.jpg"
-  ],
-  "vaultId": "vlt_01hxyz9876abcd1234efgh",
-  "createdAt": "2024-11-15T09:05:00Z",
-  "updatedAt": "2024-11-15T09:05:00Z"
+  "data": {
+    "id": 1002,
+    "title": "Cyberpunk cityscape at dusk",
+    "prompt": "A vast cyberpunk city at dusk, towering neon-lit skyscrapers reflected in rain-soaked streets, volumetric fog, cinematic composition, 8k detail",
+    "promptType": "image",
+    "platform": "artstation",
+    "status": "active",
+    "images": [],
+    "vaultIds": [42],
+    "createdAt": "2024-11-15T09:05:00Z",
+    "updatedAt": "2024-11-15T09:05:00Z"
+  },
+  "error": null
 }
 ```
 
@@ -106,8 +106,8 @@ Use `GET /api/v1/prompts` to retrieve your prompts. The endpoint supports cursor
 | Query param | Description |
 |-------------|-------------|
 | `limit` | Number of results to return. Range: `1`–`100`. Default: `20`. |
-| `cursor` | Opaque pagination cursor from the previous response's `nextCursor` field. |
-| `vaultId` | Filter to only prompts belonging to a specific vault. |
+| `cursor` | Opaque pagination cursor from the previous response's `pagination.nextCursor` field. |
+| `vaultId` | Filter to only prompts belonging to a specific vault (integer ID). |
 | `type` | Filter by `promptType`: `text`, `image`, or `video`. |
 
 ### Fetch the first page
@@ -125,22 +125,28 @@ curl "https://www.promptbank.club/api/v1/prompts?limit=20&type=image" \
 {
   "data": [
     {
-      "id": "pmt_01hxyz9999cccc8888dddd",
+      "id": 1002,
       "title": "Cyberpunk cityscape at dusk",
+      "prompt": "A vast cyberpunk city at dusk...",
       "promptType": "image",
-      "modelId": "fal-ai/recraft/v4.1/text-to-image",
-      "vaultId": "vlt_01hxyz9876abcd1234efgh",
-      "createdAt": "2024-11-15T09:05:00Z"
+      "platform": "artstation",
+      "status": "active",
+      "images": [],
+      "vaultIds": [42],
+      "createdAt": "2024-11-15T09:05:00Z",
+      "updatedAt": "2024-11-15T09:05:00Z"
     }
   ],
-  "nextCursor": "cur_01hxyzpage2token",
-  "hasMore": true
+  "pagination": {
+    "nextCursor": "cur_01hxyzpage2token"
+  },
+  "error": null
 }
 ```
 
 ### Fetch the next page
 
-Pass the `nextCursor` value as the `cursor` parameter to retrieve the following page:
+Pass the `pagination.nextCursor` value as the `cursor` query parameter to retrieve the following page:
 
 <CodeGroup>
 
@@ -151,14 +157,14 @@ curl "https://www.promptbank.club/api/v1/prompts?limit=20&type=image&cursor=cur_
 
 </CodeGroup>
 
-When `hasMore` is `false`, you have reached the last page.
+When `pagination.nextCursor` is absent or `null`, you have reached the last page.
 
 ### Filter by vault
 
 <CodeGroup>
 
 ```bash curl
-curl "https://www.promptbank.club/api/v1/prompts?vaultId=vlt_01hxyz9876abcd1234efgh&limit=50" \
+curl "https://www.promptbank.club/api/v1/prompts?vaultId=42&limit=50" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -171,7 +177,7 @@ Use `PATCH /api/v1/prompts/{promptId}` to update one or more fields without repl
 <CodeGroup>
 
 ```bash curl
-curl -X PATCH https://www.promptbank.club/api/v1/prompts/pmt_01hxyz9999cccc8888dddd \
+curl -X PATCH https://www.promptbank.club/api/v1/prompts/1002 \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -184,13 +190,19 @@ curl -X PATCH https://www.promptbank.club/api/v1/prompts/pmt_01hxyz9999cccc8888d
 
 ```json
 {
-  "id": "pmt_01hxyz9999cccc8888dddd",
-  "title": "Cyberpunk cityscape — golden hour",
-  "prompt": "A vast cyberpunk city at dusk, towering neon-lit skyscrapers reflected in rain-soaked streets, volumetric fog, cinematic composition, 8k detail",
-  "promptType": "image",
-  "modelId": "fal-ai/recraft/v4.1/text-to-image",
-  "aspectRatio": "4:3",
-  "updatedAt": "2024-11-15T11:20:00Z"
+  "data": {
+    "id": 1002,
+    "title": "Cyberpunk cityscape — golden hour",
+    "prompt": "A vast cyberpunk city at dusk, towering neon-lit skyscrapers reflected in rain-soaked streets, volumetric fog, cinematic composition, 8k detail",
+    "promptType": "image",
+    "platform": "artstation",
+    "status": "active",
+    "images": [],
+    "vaultIds": [42],
+    "createdAt": "2024-11-15T09:05:00Z",
+    "updatedAt": "2024-11-15T11:20:00Z"
+  },
+  "error": null
 }
 ```
 
@@ -201,13 +213,20 @@ Send a `DELETE` request to remove a prompt permanently. This action cannot be un
 <CodeGroup>
 
 ```bash curl
-curl -X DELETE https://www.promptbank.club/api/v1/prompts/pmt_01hxyz1111aaaa2222bbbb \
+curl -X DELETE https://www.promptbank.club/api/v1/prompts/1001 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 </CodeGroup>
 
-A successful deletion returns HTTP `204 No Content` with an empty body.
+A successful deletion returns HTTP `200` with an empty `data` field:
+
+```json
+{
+  "data": null,
+  "error": null
+}
+```
 
 ## Next steps
 

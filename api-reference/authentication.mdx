@@ -51,10 +51,9 @@ Each API key carries one or more scopes that control which operations it can per
 
 | Scope | Permitted operations |
 |-------|----------------------|
-| `prompts:read` | Read prompts and vaults |
-| `prompts:write` | Create, update, and delete prompts and vaults |
+| `prompts:write` | Create, update, delete prompts and vaults; trigger generations; upload images |
 
-Write endpoints — such as `POST /prompts` or `DELETE /vaults/{id}` — require the `prompts:write` scope. Sending a request with a read-only key to a write endpoint returns `401 Unauthorized`.
+Write endpoints — such as `POST /prompts`, `POST /generations`, or `DELETE /vaults/{vaultId}` — require the `prompts:write` scope. Sending a request to a write endpoint with a key that lacks this scope returns `401 Unauthorized`.
 
 ## Creating API keys
 

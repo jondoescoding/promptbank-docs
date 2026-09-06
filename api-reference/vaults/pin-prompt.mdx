@@ -1,7 +1,7 @@
 ---
 title: "Pin and Unpin Prompts in a Vault — Prompt Bank API"
 sidebarTitle: "Pin Prompt"
-description: "POST and DELETE /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/pin — pin a prompt to the top of a vault or unpin it. Pinned prompts appear first in vault listings."
+description: "Pin or unpin any prompt in a vault to control its listing order. POST pins the prompt to the top; DELETE removes the pin. Both return 200 OK."
 ---
 
 Pin a prompt to the top of a vault so it always appears first when the vault's contents are listed, or unpin it to restore the default sort order. Pinning is managed through the same path using two complementary HTTP methods: `POST` to pin and `DELETE` to unpin. You can pin as many prompts as you like within a vault — they will all appear at the top, ordered among themselves by pin date.

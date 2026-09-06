@@ -1,7 +1,7 @@
 ---
-title: "PATCH /api/v1/vaults/{vaultId} — Update a Vault"
+title: "Update Vault Properties — Prompt Bank API Reference"
 sidebarTitle: "Update Vault"
-description: "PATCH /api/v1/vaults/{vaultId} — update a vault's name, description, or visibility. Send only the fields you want to change."
+description: "PATCH /api/v1/vaults/{vaultId} — update a vault's name, description, or visibility. All fields are optional; send only the properties you want to change."
 ---
 
 Update one or more properties of an existing vault you own. This endpoint uses partial update semantics — you only need to include the fields you want to change, and all other properties remain untouched. For example, you can rename a vault without affecting its visibility or description, or flip a private vault to public in a single targeted request.

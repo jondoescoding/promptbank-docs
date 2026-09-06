@@ -25,7 +25,7 @@ When the Prompt Bank API cannot fulfill a request it returns an error response. 
     **Meaning:** The request was rejected because the body or query parameters are invalid or incomplete.
 
     **Common causes:**
-    - A required field is missing from the request body (e.g. omitting `name` when creating a prompt).
+    - A required field is missing from the request body (e.g. omitting `title` when creating a prompt).
     - A field value is the wrong type (e.g. sending a string where an integer is expected).
     - A query parameter is outside the accepted range (e.g. `limit=0` or `limit=500`).
 
@@ -40,7 +40,7 @@ When the Prompt Bank API cannot fulfill a request it returns an error response. 
       "data": null,
       "error": "Validation failed.",
       "details": {
-        "name": "This field is required."
+        "title": "This field is required."
       }
     }
     ```

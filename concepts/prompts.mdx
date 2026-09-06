@@ -22,15 +22,32 @@ Choosing the correct type keeps your vault organized and lets the API surface th
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `title` | string | Human-readable name for the prompt. Maximum 120 characters. |
-| `prompt` | string | The actual instruction text sent to the model. Maximum 15,000 characters. |
-| `promptType` | string | One of `image`, `text`, or `video`. |
-| `modelId` | string | The fal.ai model endpoint to use for generation (e.g., `fal-ai/recraft/v4.1/text-to-image`). |
-| `aspectRatio` | string | Desired output dimensions, such as `16:9`, `1:1`, or `9:16`. |
+| `title` | string | Human-readable name for the prompt. Required. Maximum 120 characters. |
+| `prompt` | string | The actual instruction text sent to the model. Required. Maximum 15,000 characters. |
+| `promptType` | string | One of `image`, `text`, or `video`. Defaults to `text`. |
+| `modelId` | string | The fal.ai model endpoint to use for generation (e.g., `fal-ai/recraft/v4.1/text-to-image`). Must match the pattern `fal-ai/…`. Required when `promptType` is `image` or `video`. |
+| `aspectRatio` | string | Desired output dimensions, such as `16:9`, `1:1`, or `9:16`. Maximum 20 characters. |
 | `platform` | string | Optional label for the target platform or use-case (e.g., `instagram`, `youtube`). |
-| `imageUrl` | string | A URL to the primary image associated with this prompt — typically the last generated output or a reference image. |
-| `referenceMediaUrls` | array | Up to 10 URLs pointing to reference images or videos that provide visual context for the model. |
-| `vaultId` | string | The ID of the vault this prompt belongs to. Omit to save to your General vault. |
+| `imageUrl` | string (URI) | A URL to the primary image associated with this prompt — typically the last generated output or a reference image. |
+| `referenceMediaUrls` | array (URI) | Up to 10 URLs pointing to reference images or videos that provide visual context for the model. |
+| `vaultId` | integer | The numeric ID of the vault to associate this prompt with. Omit to save to your General vault. |
+
+## Prompt object
+
+When you read a prompt from the API, the returned object includes the following fields:
+
+| Field | Description |
+|-------|-------------|
+| `id` | Unique prompt identifier. |
+| `title` | Human-readable name. |
+| `prompt` | The instruction text. |
+| `promptType` | `image`, `text`, or `video`. |
+| `platform` | Optional platform label. |
+| `status` | Current status of the prompt (e.g., `active`). |
+| `images` | Array of generated output images associated with this prompt. |
+| `vaultIds` | Array of vault IDs this prompt belongs to. |
+| `createdAt` | ISO 8601 timestamp of when the prompt was created. |
+| `updatedAt` | ISO 8601 timestamp of the last update. |
 
 ## Prompt lifecycle
 
@@ -46,20 +63,21 @@ The following shows a complete image prompt as returned by the API:
 
 ```json
 {
-  "id": "pmt_01hxyz1234abcd5678efgh",
-  "title": "Cyberpunk cityscape at dusk",
-  "prompt": "A vast cyberpunk city at dusk, towering neon-lit skyscrapers reflected in rain-soaked streets, volumetric fog, cinematic composition, 8k detail",
-  "promptType": "image",
-  "modelId": "fal-ai/recraft/v4.1/text-to-image",
-  "aspectRatio": "16:9",
-  "platform": "artstation",
-  "imageUrl": "https://cdn.promptbank.club/outputs/01hxyz1234.webp",
-  "referenceMediaUrls": [
-    "https://cdn.promptbank.club/refs/neon-ref-01.jpg"
-  ],
-  "vaultId": "vlt_01hxyz9876abcd1234efgh",
-  "createdAt": "2024-11-15T10:32:00Z",
-  "updatedAt": "2024-11-15T10:32:00Z"
+  "data": {
+    "id": "pmt_01hxyz1234abcd5678efgh",
+    "title": "Cyberpunk cityscape at dusk",
+    "prompt": "A vast cyberpunk city at dusk, towering neon-lit skyscrapers reflected in rain-soaked streets, volumetric fog, cinematic composition, 8k detail",
+    "promptType": "image",
+    "platform": "artstation",
+    "status": "active",
+    "images": [
+      "https://cdn.promptbank.club/outputs/01hxyz1234.webp"
+    ],
+    "vaultIds": [42],
+    "createdAt": "2024-11-15T10:32:00Z",
+    "updatedAt": "2024-11-15T10:32:00Z"
+  },
+  "error": null
 }
 ```
 

@@ -1,14 +1,10 @@
 ---
-title: "POST /api/v1/prompts/{promptId}/save — Save Prompt to Vault"
+title: "Save Prompt to Vault — POST /api/v1/prompts/{id}/save"
 sidebarTitle: "Save to Vault"
-description: "POST /api/v1/prompts/{promptId}/save — add an existing prompt to a vault by vault ID. The prompt can belong to multiple vaults simultaneously."
+description: "Add an existing prompt to a vault by vault ID. A prompt can belong to many vaults at once — saving to a new vault never removes it from existing vaults."
 ---
 
 Add an existing prompt to a vault so you can organise and share it alongside related prompts. A single prompt can belong to any number of vaults at the same time — saving it to a new vault never removes it from the vaults it already belongs to.
-
-<Note>
-  A prompt's full list of current vault memberships is always reflected in the `vaultIds` array on the prompt object. You can verify the save succeeded by checking that the target vault ID appears in that array after the call.
-</Note>
 
 <Note>
   **POST** `https://www.promptbank.club/api/v1/prompts/{promptId}/save`
@@ -57,4 +53,4 @@ curl -X POST https://www.promptbank.club/api/v1/prompts/42/save \
 }
 ```
 
-A successful save returns HTTP **200 OK** with the updated prompt object. Notice that `vaultIds` now contains both the original vault (`7`) and the newly added vault (`15`).
+A successful save returns HTTP **200 OK** with the updated prompt object. Notice that `vaultIds` now contains both the original vault (`7`) and the newly added vault (`15`). A prompt's full list of current vault memberships is always reflected in the `vaultIds` array — you can verify the save succeeded by checking that the target vault ID appears in that array.

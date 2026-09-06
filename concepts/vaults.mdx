@@ -34,12 +34,13 @@ You can change a vault's visibility at any time by sending a `PATCH /api/v1/vaul
 
 ## Managing prompts in a vault
 
-Once a vault exists, you have full control over which prompts live inside it and how they are arranged.
+Once a vault exists, you have full control over which prompts live inside it and how they are arranged. The endpoints use a `vaultPromptId` — the ID of the vault-prompt association record — rather than the underlying `promptId`. This distinction matters when you remove, pin, or move a prompt: you are operating on the membership link, not the prompt itself.
 
-- **Add prompts** — `POST /api/v1/vaults/{vaultId}/prompts` with a `promptIds` array (up to 50 IDs per request).
+- **Add prompts** — `POST /api/v1/vaults/{vaultId}/prompts` to add a prompt to the vault. The response returns a `vaultPromptId` you can use for subsequent operations.
+- **List prompts** — `GET /api/v1/vaults/{vaultId}/prompts` returns the prompts in the vault along with their `vaultPromptId` values.
 - **Remove prompts** — `DELETE /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}` removes the association without deleting the underlying prompt.
-- **Pin a prompt** — `POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/pin` marks a prompt as pinned so it surfaces at the top of vault listings.
-- **Move a prompt** — `POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move` with a `targetVaultId` transfers the prompt to a different vault.
+- **Pin a prompt** — `POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/pin` marks a prompt as pinned so it surfaces at the top of vault listings. Send `DELETE` to the same path to unpin.
+- **Move a prompt** — `POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move` with body `{ "targetVaultId": 42 }` transfers the prompt to a different vault.
 
 ## Forking a vault
 
@@ -53,19 +54,44 @@ POST /api/v1/vaults/{vaultId}/fork
 
 The API creates a new vault in your account with the same name, description, and prompts as the source. The forked vault starts as `private` so you can edit it freely before sharing. The original vault is not modified.
 
+## Vault object
+
+The vault object returned by the API contains the following fields:
+
+| Field | Description |
+|-------|-------------|
+| `id` | Unique vault identifier. |
+| `name` | Human-readable vault name. |
+| `description` | Optional description text. |
+| `slug` | URL-safe identifier used in shareable links. |
+| `visibility` | One of `private`, `unlisted`, or `public`. |
+| `accessType` | Indicates how the requesting user is accessing the vault (e.g., as owner or viewer). |
+| `isLocked` | Whether the vault is locked from edits. |
+| `coverImageUrl` | Optional URL for a cover image displayed on the vault page. |
+| `isSystem` | `true` for the automatically created General vault, `false` for all others. |
+| `promptCount` | Number of prompts currently in the vault. |
+| `createdAt` | ISO 8601 timestamp of creation. |
+| `updatedAt` | ISO 8601 timestamp of the last update. |
+
 ## Example vault object
 
 ```json
 {
-  "id": "vlt_01hxyz9876abcd1234efgh",
-  "name": "Cyberpunk Scenes",
-  "slug": "cyberpunk-scenes",
-  "description": "A curated set of prompts for neon-noir cityscape imagery.",
-  "visibility": "public",
-  "isSystem": false,
-  "promptCount": 24,
-  "createdAt": "2024-10-01T08:00:00Z",
-  "updatedAt": "2024-11-14T17:45:00Z"
+  "data": {
+    "id": 7,
+    "name": "Cyberpunk Scenes",
+    "slug": "cyberpunk-scenes",
+    "description": "A curated set of prompts for neon-noir cityscape imagery.",
+    "visibility": "public",
+    "accessType": "owner",
+    "isLocked": false,
+    "coverImageUrl": null,
+    "isSystem": false,
+    "promptCount": 24,
+    "createdAt": "2024-10-01T08:00:00Z",
+    "updatedAt": "2024-11-14T17:45:00Z"
+  },
+  "error": null
 }
 ```
 

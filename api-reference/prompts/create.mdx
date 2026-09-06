@@ -1,7 +1,7 @@
 ---
-title: "POST /api/v1/prompts — Create a New Prompt"
+title: "Create Prompt — POST /api/v1/prompts | Prompt Bank"
 sidebarTitle: "Create Prompt"
-description: "POST /api/v1/prompts — create a text, image, or video prompt. Requires title, prompt text, and for image/video types a valid fal.ai modelId."
+description: "Create a text, image, or video prompt. Requires a title and prompt text. For image and video types, a valid fal-ai/ modelId is also required."
 ---
 
 Create a new prompt in your account. Every prompt requires a title and the prompt text itself. For `image` and `video` prompt types, you must also supply a `modelId` in the `fal-ai/` namespace so the platform knows which model to use when generating output.
@@ -25,7 +25,7 @@ Create a new prompt in your account. Every prompt requires a title and the promp
 </ParamField>
 
 <ParamField body="platform" type="string">
-  A label for the platform or tool this prompt targets (e.g. `"fal.ai"`, `"Midjourney"`). Maximum **80** characters.
+  A label for the platform or tool this prompt targets (e.g. `"fal.ai"`, `"Midjourney"`).
 </ParamField>
 
 <ParamField body="modelId" type="string">

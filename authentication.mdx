@@ -1,25 +1,14 @@
 ---
-title: "Authenticate Requests to the Prompt Bank API"
+title: "API Authentication: Bearer Tokens & Keys | Prompt Bank"
 sidebarTitle: "Authentication"
 description: "All Prompt Bank API requests use Bearer token authentication. Learn how to create API keys, pass them in requests, and handle authentication errors."
 ---
 
-Every request to the Prompt Bank API must be authenticated using a Bearer token. You obtain a token by creating an API key through your account dashboard or via the `POST /api/v1/api-keys` endpoint (session-authenticated). Once you have a key, you include it in the `Authorization` header of every HTTP request — no cookies, no OAuth redirects, just a single header.
+Every request to the Prompt Bank API must be authenticated using a Bearer token. You obtain a token by creating an API key through your account dashboard at [promptbank.club](https://www.promptbank.club). Once you have a key, include it in the `Authorization` header of every HTTP request — no cookies, no OAuth redirects, just a single header.
 
 ## Create an API key
 
-API keys are created either from the **API Keys** section of your account settings at [promptbank.club](https://www.promptbank.club), or programmatically through the API itself.
-
-The `POST /api/v1/api-keys` endpoint requires an active browser session (cookie-based) rather than a Bearer token — it is the bootstrapping step that produces keys for all subsequent requests. Pass a human-readable `name` in the request body so you can identify the key later.
-
-```bash
-curl -X POST https://www.promptbank.club/api/v1/api-keys \
-  -H "Content-Type: application/json" \
-  --cookie "session=<your-session-cookie>" \
-  -d '{
-    "name": "my-automation-key"
-  }'
-```
+The easiest way to create an API key is from the **API Keys** section of your account settings at [promptbank.club](https://www.promptbank.club). Click **Create API key**, enter a descriptive name (up to 80 characters), and copy the key immediately — it is shown in full only once.
 
 See the [API Keys reference](/api-reference/api-keys) for the full request and response schema.
 
@@ -69,16 +58,14 @@ The key format is `pb_live_` followed by a public identifier, an underscore, and
 
 ## Scopes
 
-API keys carry permission scopes that control which operations they can perform. The scope model follows a `resource:action` naming convention.
+API keys carry permission scopes that control which operations they can perform.
 
 | Scope | Description |
 |---|---|
 | `prompts:read` | Read prompts and vault contents. Granted to all keys by default. |
-| `prompts:write` | Create, update, and delete prompts. Required for any write operation on prompts. |
-| `generations:write` | Queue new generation jobs. Required to call `POST /api/v1/generations`. |
-| `vaults:write` | Create and modify vaults. Required to save prompts to vaults. |
+| `prompts:write` | Create, update, delete prompts, queue generations, and upload images. Required for any write operation. |
 
-If a request requires a scope that your key does not have, the API returns `403 Forbidden`. You can verify a key's assigned scopes by calling `GET /api/v1/api-keys/{keyId}`.
+You can verify a key's assigned scopes by calling `GET /api/v1/api-keys/{keyId}`.
 
 ## Security best practices
 
@@ -89,15 +76,16 @@ If a request requires a scope that your key does not have, the API returns `403 
 A few additional practices to keep your keys secure:
 
 - **Use one key per environment.** Create separate keys for development, staging, and production so you can revoke a single environment's access without affecting others.
-- **Apply the principle of least privilege.** Only assign the scopes a key actually needs. A key used only for reading prompts should not have `generations:write`.
+- **Apply the principle of least privilege.** Only assign the scopes a key actually needs. A key used only for reading prompts should not have `prompts:write`.
 - **Audit key usage.** Review the list of active API keys periodically and delete any that are no longer in use.
 
 ## Error reference
 
-The following HTTP status codes relate directly to authentication and authorization failures.
+The following HTTP status codes relate directly to authentication and access failures.
 
 | Status code | Meaning | Common cause |
 |---|---|---|
 | `401 Unauthorized` | Missing or invalid Bearer token | The `Authorization` header is absent, the token is malformed, or the key has been revoked. |
-| `403 Forbidden` | Authenticated but not authorized | Your key does not have the required scope for the requested operation. |
 | `404 Not Found` | Resource does not exist | The resource ID in the path does not exist, or it belongs to another account your key cannot access. |
+
+All error responses follow the standard envelope format: `{ "data": null, "error": "message", "details": {} }`.

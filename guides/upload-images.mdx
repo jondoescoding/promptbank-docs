@@ -11,8 +11,8 @@ Uploading images to Prompt Bank gives you a stable, CDN-hosted URL that you can 
 | Property | Details |
 |----------|---------|
 | Formats | PNG, JPEG, WebP, GIF |
-| Maximum file size | 10 MB |
-| Signed URL expiry | 2 hours from issue time |
+| Maximum file size | 10,485,760 bytes (10 MB) |
+| Signed URL expiry | 7,200 seconds (2 hours) from issue time |
 
 ## Upload an image
 
@@ -20,7 +20,7 @@ Uploading images to Prompt Bank gives you a stable, CDN-hosted URL that you can 
 
 <Step title="Request a signed upload URL">
 
-Send a `POST /api/v1/uploads/images` request with the `contentType` and `size` (in bytes) of the file you want to upload. The API returns a short-lived signed URL along with a token and the permanent URL your file will live at:
+Send a `POST /api/v1/uploads/images` request with the `contentType` and `size` (in bytes) of the file you want to upload. This endpoint requires the `prompts:write` scope. The API returns a short-lived signed URL, a token, and the permanent URL your file will live at once uploaded:
 
 ```bash
 curl -X POST https://www.promptbank.club/api/v1/uploads/images \
@@ -34,16 +34,21 @@ curl -X POST https://www.promptbank.club/api/v1/uploads/images \
 
 ```json
 {
-  "uploadUrl": "https://storage.supabase.co/object/sign/uploads/usr_01hxyz/ref-01hxyz.png?token=eyJhbGci...",
-  "token": "eyJhbGci...",
-  "url": "https://cdn.promptbank.club/uploads/usr_01hxyz/ref-01hxyz.png",
-  "path": "usr_01hxyz/ref-01hxyz.png",
-  "expiresIn": 7200
+  "data": {
+    "uploadUrl": "https://uploads.promptbank.club/sign/usr_01hxyz/ref-01hxyz.png?token=eyJhbGci...",
+    "token": "eyJhbGci...",
+    "url": "https://cdn.promptbank.club/uploads/usr_01hxyz/ref-01hxyz.png",
+    "path": "usr_01hxyz/ref-01hxyz.png",
+    "contentType": "image/png",
+    "size": 2048000,
+    "expiresIn": 7200
+  },
+  "error": null
 }
 ```
 
 <Warning>
-The `uploadUrl` expires **2 hours** after it is issued. Complete the file upload before the expiry time. If the URL expires before you upload, request a new signed URL by calling `POST /api/v1/uploads/images` again.
+The `uploadUrl` expires **7,200 seconds (2 hours)** after it is issued. Complete the file upload before the expiry time. If the URL expires before you upload, request a new signed URL by calling `POST /api/v1/uploads/images` again.
 </Warning>
 
 </Step>
@@ -53,12 +58,12 @@ The `uploadUrl` expires **2 hours** after it is issued. Complete the file upload
 Send the raw file bytes to the `uploadUrl` using a `PUT` request. Set the `Content-Type` header to match the `contentType` you declared in the previous step:
 
 ```bash
-curl -X PUT "https://storage.supabase.co/object/sign/uploads/usr_01hxyz/ref-01hxyz.png?token=eyJhbGci..." \
+curl -X PUT "https://uploads.promptbank.club/sign/usr_01hxyz/ref-01hxyz.png?token=eyJhbGci..." \
   -H "Content-Type: image/png" \
   --data-binary @/path/to/your/image.png
 ```
 
-A `200 OK` response from Supabase Storage confirms the bytes were written successfully. No Prompt Bank authentication header is needed for this step — the signed URL carries the required authorization.
+A `200 OK` response confirms the bytes were written successfully. No Prompt Bank `Authorization` header is needed for this step — the signed URL carries the required authorization.
 
 </Step>
 
@@ -67,13 +72,13 @@ A `200 OK` response from Supabase Storage confirms the bytes were written succes
 After the upload succeeds, use the `url` value (not the `uploadUrl`) wherever Prompt Bank expects an image URL. The `url` is permanent and does not expire.
 
 <Note>
-Always use the `url` field from the upload response — not the `uploadUrl`. The `uploadUrl` is a temporary signed URL for writing to storage; it will stop working after the 2-hour expiry window. The `url` is the CDN-hosted address where your file lives permanently.
+Always use the `url` field from the upload response — not the `uploadUrl`. The `uploadUrl` is a temporary signed URL used only to write your file to storage; it stops working after the 2-hour expiry window. The `url` is the CDN-hosted address where your file lives permanently.
 </Note>
 
 **Attach to a prompt as `imageUrl`:**
 
 ```bash
-curl -X PATCH https://www.promptbank.club/api/v1/prompts/pmt_01hxyz9999cccc8888dddd \
+curl -X PATCH https://www.promptbank.club/api/v1/prompts/1002 \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -84,7 +89,7 @@ curl -X PATCH https://www.promptbank.club/api/v1/prompts/pmt_01hxyz9999cccc8888d
 **Use as a reference in `referenceMediaUrls`:**
 
 ```bash
-curl -X PATCH https://www.promptbank.club/api/v1/prompts/pmt_01hxyz9999cccc8888dddd \
+curl -X PATCH https://www.promptbank.club/api/v1/prompts/1002 \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -106,7 +111,7 @@ curl -X POST https://www.promptbank.club/api/v1/generations \
     "generationType": "image",
     "imageInput": "https://cdn.promptbank.club/uploads/usr_01hxyz/ref-01hxyz.png",
     "aspectRatio": "2:3",
-    "vaultId": "vlt_01hxyz9876abcd1234efgh"
+    "vaultId": 42
   }'
 ```
 

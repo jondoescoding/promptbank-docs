@@ -1,7 +1,7 @@
 ---
 title: "POST /api/v1/uploads/images — Upload a Prompt Image"
 sidebarTitle: "Upload Image"
-description: "POST /api/v1/uploads/images — get a signed upload URL for PNG, JPEG, WebP, or GIF files up to 10 MB. Upload bytes directly to storage, then use the returned URL."
+description: "POST /api/v1/uploads/images — request a signed upload URL for PNG, JPEG, WebP, or GIF up to 10 MB, then PUT bytes directly to storage."
 ---
 
 Uploading an image to Prompt Bank is a two-step process. First, you call this endpoint to request a short-lived signed upload URL and receive back a permanent asset URL. Second, you PUT the raw file bytes directly to that signed URL. Once the upload completes, the permanent URL is ready to use in any API call that accepts an image — such as the `imageUrl` field on a prompt or the `imageInput` field on a generation. This design keeps large binary data out of Prompt Bank's servers and delivers your file straight to storage with minimal latency.
@@ -51,13 +51,16 @@ curl -X POST https://www.promptbank.club/api/v1/uploads/images \
 
 ```json
 {
-  "uploadUrl": "https://storage.promptbank.club/uploads/signed/abc123...?token=xyz&expires=1718000000",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "url": "https://storage.promptbank.club/assets/images/f47ac10b-58cc-4372-a567-0e02b2c3d479.png",
-  "path": "assets/images/f47ac10b-58cc-4372-a567-0e02b2c3d479.png",
-  "contentType": "image/png",
-  "size": 204800,
-  "expiresIn": 7200
+  "data": {
+    "uploadUrl": "https://storage.promptbank.club/uploads/signed/abc123...?token=xyz&expires=1718000000",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "url": "https://storage.promptbank.club/assets/images/f47ac10b-58cc-4372-a567-0e02b2c3d479.png",
+    "path": "assets/images/f47ac10b-58cc-4372-a567-0e02b2c3d479.png",
+    "contentType": "image/png",
+    "size": 204800,
+    "expiresIn": 7200
+  },
+  "error": null
 }
 ```
 

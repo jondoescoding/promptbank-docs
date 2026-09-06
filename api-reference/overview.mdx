@@ -28,7 +28,7 @@ Send request bodies as JSON. Set the `Content-Type` header to `application/json`
 curl -X POST https://www.promptbank.club/api/v1/prompts \
   -H "Authorization: Bearer pb_live_..." \
   -H "Content-Type: application/json" \
-  -d '{"name": "My Prompt", "content": "You are a helpful assistant."}'
+  -d '{"title": "My Prompt", "prompt": "You are a helpful assistant.", "promptType": "text"}'
 ```
 
 ## Response Envelope
@@ -47,10 +47,15 @@ List endpoints include an additional `pagination` object alongside `data` and `e
 ```json
 {
   "data": {
-    "id": "prompt_01j9k2m3n4p5q6r7s8t9u0v1",
-    "name": "My Prompt",
-    "content": "You are a helpful assistant.",
-    "createdAt": "2024-11-01T12:00:00Z"
+    "id": 1,
+    "title": "My Prompt",
+    "prompt": "You are a helpful assistant.",
+    "promptType": "text",
+    "status": "active",
+    "vaultIds": [],
+    "images": [],
+    "createdAt": "2024-11-01T12:00:00Z",
+    "updatedAt": "2024-11-01T12:00:00Z"
   },
   "error": null
 }

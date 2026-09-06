@@ -1,7 +1,7 @@
 ---
-title: "POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move — Move Prompt"
+title: "Move a Vault Prompt to Another Vault — Prompt Bank API"
 sidebarTitle: "Move Prompt"
-description: "POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move — move a prompt from one vault to another vault you own. Requires targetVaultId in the request body."
+description: "Move a prompt from one vault to another you own. POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move — supply targetVaultId in the request body."
 ---
 
 Move a prompt from one of your vaults to another in a single atomic operation. Supply the source vault and the vault–prompt membership ID in the path, and specify the destination vault in the request body. After a successful move, the prompt is no longer a member of the source vault and immediately appears in the target vault. Both vaults must belong to your account.

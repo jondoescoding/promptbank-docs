@@ -36,8 +36,12 @@ The `data` field contains an array of prompt objects. Pinned prompts (`isPinned:
       "id": 101,
       "vaultPromptId": 55,
       "title": "Golden Hour Portrait",
-      "body": "A warm golden hour portrait of a woman standing in a field of wheat, soft bokeh background, film grain, Kodak Portra 400",
-      "tags": ["portrait", "golden-hour", "photography"],
+      "prompt": "A warm golden hour portrait of a woman standing in a field of wheat, soft bokeh background, film grain, Kodak Portra 400",
+      "promptType": "image",
+      "platform": "fal",
+      "status": "active",
+      "images": [],
+      "vaultIds": [7],
       "isPinned": true,
       "createdAt": "2024-05-02T12:00:00Z",
       "updatedAt": "2024-05-10T08:00:00Z"
@@ -46,8 +50,12 @@ The `data` field contains an array of prompt objects. Pinned prompts (`isPinned:
       "id": 108,
       "vaultPromptId": 61,
       "title": "Studio Lighting Close-Up",
-      "body": "Close-up portrait with dramatic studio lighting, deep shadows, high contrast, black and white, sharp focus on eyes",
-      "tags": ["portrait", "studio", "monochrome"],
+      "prompt": "Close-up portrait with dramatic studio lighting, deep shadows, high contrast, black and white, sharp focus on eyes",
+      "promptType": "image",
+      "platform": "fal",
+      "status": "active",
+      "images": [],
+      "vaultIds": [7],
       "isPinned": false,
       "createdAt": "2024-05-12T15:30:00Z",
       "updatedAt": "2024-05-12T15:30:00Z"
@@ -64,8 +72,12 @@ The `data` field contains an array of prompt objects. Pinned prompts (`isPinned:
 | `id` | integer | The unique ID of the prompt record. |
 | `vaultPromptId` | integer | The unique ID of the vault–prompt membership record. Used when removing, moving, or pinning the prompt within this vault. |
 | `title` | string | The prompt's display title. |
-| `body` | string | The full text content of the prompt. |
-| `tags` | array of strings | Tags associated with the prompt. |
+| `prompt` | string | The full text content of the prompt. |
+| `promptType` | string | One of `image`, `text`, or `video`. |
+| `platform` | string \| null | The platform or service this prompt targets, if set. |
+| `status` | string | The current status of the prompt (e.g. `active`). |
+| `images` | array | Image outputs generated from this prompt, if any. |
+| `vaultIds` | array of integers | IDs of all vaults this prompt belongs to. |
 | `isPinned` | boolean | Whether the prompt is pinned to the top of this vault. |
 | `createdAt` | string | ISO 8601 timestamp when the prompt was created. |
 | `updatedAt` | string | ISO 8601 timestamp of the last modification. |

@@ -27,15 +27,21 @@ curl -X POST https://www.promptbank.club/api/v1/vaults \
 
 ```json
 {
-  "id": "vlt_01hxyz9876abcd1234efgh",
-  "name": "Cyberpunk Scenes",
-  "slug": "cyberpunk-scenes",
-  "description": "A curated set of prompts for neon-noir cityscape imagery.",
-  "visibility": "private",
-  "isSystem": false,
-  "promptCount": 0,
-  "createdAt": "2024-11-15T08:00:00Z",
-  "updatedAt": "2024-11-15T08:00:00Z"
+  "data": {
+    "id": 42,
+    "name": "Cyberpunk Scenes",
+    "slug": "cyberpunk-scenes",
+    "description": "A curated set of prompts for neon-noir cityscape imagery.",
+    "visibility": "private",
+    "accessType": "owner",
+    "isLocked": false,
+    "coverImageUrl": null,
+    "isSystem": false,
+    "promptCount": 0,
+    "createdAt": "2024-11-15T08:00:00Z",
+    "updatedAt": "2024-11-15T08:00:00Z"
+  },
+  "error": null
 }
 ```
 
@@ -43,18 +49,14 @@ curl -X POST https://www.promptbank.club/api/v1/vaults \
 
 <Step title="Add prompts to the vault">
 
-Once you have prompt IDs, add up to 50 at a time with `POST /api/v1/vaults/{vaultId}/prompts`:
+Once you have prompt IDs, add up to 50 at a time with `POST /api/v1/vaults/{vaultId}/prompts`. Use the integer `id` values returned when you created each prompt:
 
 ```bash
-curl -X POST https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh/prompts \
+curl -X POST https://www.promptbank.club/api/v1/vaults/42/prompts \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "promptIds": [
-      "pmt_01hxyz9999cccc8888dddd",
-      "pmt_01hxyz7777eeee6666ffff",
-      "pmt_01hxyz5555gggg4444hhhh"
-    ]
+    "promptIds": [1001, 1002, 1003]
   }'
 ```
 
@@ -64,10 +66,10 @@ The response returns the updated vault with the new `promptCount`.
 
 <Step title="Set visibility to share the vault">
 
-When your vault is ready to share, update its `visibility`:
+When your vault is ready to share, update its `visibility` with a `PATCH` request:
 
 ```bash
-curl -X PATCH https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh \
+curl -X PATCH https://www.promptbank.club/api/v1/vaults/42 \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -123,45 +125,66 @@ curl -X POST https://www.promptbank.club/api/v1/vaults \
 
 ## Adding prompts to a vault
 
-Use `POST /api/v1/vaults/{vaultId}/prompts` to associate existing prompts with a vault. You can add up to 50 prompt IDs in a single request:
+Use `POST /api/v1/vaults/{vaultId}/prompts` to associate existing prompts with a vault. Pass an array of integer prompt `id` values in `promptIds`. You can add up to 50 at a time:
 
 ```bash
-curl -X POST https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh/prompts \
+curl -X POST https://www.promptbank.club/api/v1/vaults/42/prompts \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "promptIds": [
-      "pmt_01hxyz9999cccc8888dddd",
-      "pmt_01hxyz7777eeee6666ffff"
-    ]
+    "promptIds": [1001, 1002]
   }'
 ```
 
-The `promptIds` values refer to existing prompts in your account. Creating a prompt with a `vaultId` body parameter also adds it directly.
+The `promptIds` values are the integer `id` fields returned when you created each prompt. You can also add a prompt directly to a vault at creation time by including a `vaultId` integer in the `POST /api/v1/prompts` body.
 
-## Pinning prompts
+## Removing a prompt from a vault
 
-Pinning a prompt marks it as featured within the vault. Pinned prompts are surfaced at the top of vault listings. Use the `vaultPromptId` — the ID of the vault-prompt association, returned when you add a prompt — not the prompt's own ID:
+To remove a prompt from a vault without deleting the underlying prompt, use `DELETE /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}`. The `vaultPromptId` is the ID of the vault-prompt association (returned when you add prompts), not the prompt's own ID:
+
+```bash
+curl -X DELETE \
+  https://www.promptbank.club/api/v1/vaults/42/prompts/789 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+The prompt object itself is unaffected and remains accessible in any other vaults it belongs to.
+
+## Pinning and unpinning prompts
+
+Pinning a prompt marks it as featured within the vault. Pinned prompts are surfaced at the top of vault listings. Use the `vaultPromptId` — the ID of the vault-prompt association, returned when you add a prompt — not the prompt's own `id`.
+
+**Pin a prompt:**
 
 ```bash
 curl -X POST \
-  https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh/prompts/vp_01hxyz3333iiii2222jjjj/pin \
+  https://www.promptbank.club/api/v1/vaults/42/prompts/789/pin \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 A `200 OK` response confirms the prompt is now pinned.
 
+**Unpin a prompt:**
+
+```bash
+curl -X DELETE \
+  https://www.promptbank.club/api/v1/vaults/42/prompts/789/pin \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+A `200 OK` response confirms the prompt is no longer pinned.
+
 ## Moving prompts between vaults
 
-To transfer a prompt from one vault to another, use the `move` endpoint with the `targetVaultId`:
+To transfer a prompt from one vault to another, use `POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move` with a `targetVaultId` integer in the body:
 
 ```bash
 curl -X POST \
-  https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh/prompts/vp_01hxyz3333iiii2222jjjj/move \
+  https://www.promptbank.club/api/v1/vaults/42/prompts/789/move \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "targetVaultId": "vlt_01hxyz1111kkkk0000llll"
+    "targetVaultId": 99
   }'
 ```
 
@@ -172,21 +195,27 @@ The prompt is removed from the source vault and added to the target vault. The u
 Forking copies all prompts from a `public` or `unlisted` vault into a new vault owned by your account. The forked vault starts as `private`.
 
 ```bash
-curl -X POST https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh/fork \
+curl -X POST https://www.promptbank.club/api/v1/vaults/42/fork \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ```json
 {
-  "id": "vlt_01hxyz2222mmmm3333nnnn",
-  "name": "Cyberpunk Scenes (fork)",
-  "slug": "cyberpunk-scenes-fork",
-  "description": "A curated set of prompts for neon-noir cityscape imagery.",
-  "visibility": "private",
-  "isSystem": false,
-  "promptCount": 24,
-  "createdAt": "2024-11-15T14:00:00Z",
-  "updatedAt": "2024-11-15T14:00:00Z"
+  "data": {
+    "id": 101,
+    "name": "Cyberpunk Scenes (fork)",
+    "slug": "cyberpunk-scenes-fork",
+    "description": "A curated set of prompts for neon-noir cityscape imagery.",
+    "visibility": "private",
+    "accessType": "owner",
+    "isLocked": false,
+    "coverImageUrl": null,
+    "isSystem": false,
+    "promptCount": 24,
+    "createdAt": "2024-11-15T14:00:00Z",
+    "updatedAt": "2024-11-15T14:00:00Z"
+  },
+  "error": null
 }
 ```
 

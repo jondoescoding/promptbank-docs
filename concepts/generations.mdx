@@ -4,7 +4,7 @@ sidebarTitle: "Generations"
 description: "Generations let you queue AI image and video creation through the Prompt Bank API. Learn the async generation flow, supported models, and how outputs are saved to vaults."
 ---
 
-The generation system in Prompt Bank lets you queue AI image and video creation jobs with a single API call. You describe what you want, choose a model, and the API dispatches the job to fal.ai on your behalf. When the model finishes, the output is saved directly to your vault — no polling loop, no manual download.
+The generation system in Prompt Bank lets you queue AI image and video creation jobs with a single API call. You describe what you want, choose a model, and the API dispatches the job to fal.ai on your behalf. When the model finishes, the output is saved directly to your vault — no manual download required.
 
 <Warning>
 Generations are **asynchronous**. The response to `POST /api/v1/generations` confirms that your job was queued — it does **not** contain the finished image or video. Use the `statusUrl` from the response to track progress, and expect the output to appear in your vault once the job completes.
@@ -14,52 +14,56 @@ Generations are **asynchronous**. The response to `POST /api/v1/generations` con
 
 Queuing a generation follows these steps:
 
-1. **Queue the job** — Send `POST /api/v1/generations` with your prompt, model, and any generation parameters. The API returns a `clientJobId`, a `falRequestId`, and a `statusUrl`.
+1. **Queue the job** — Send `POST /api/v1/generations` with your prompt, model, and any generation parameters. The API returns HTTP `202 Accepted` with a `clientJobId`, a `falRequestId`, and a `statusUrl`.
 2. **Job runs on fal.ai** — Prompt Bank forwards the request to the fal.ai inference infrastructure. Processing time varies by model and content type — images typically finish in seconds; videos may take longer.
-3. **Output saved to your vault** — Once the model finishes, Prompt Bank saves the generated media to the vault you specified (or your General vault if you didn't supply a `vaultId`). The asset becomes queryable via the prompts and vault endpoints.
+3. **Output saved to your vault** — Once the model finishes, Prompt Bank asynchronously saves the generated media to the vault you specified (or your General vault if you didn't supply a `vaultId`). The asset becomes queryable via the prompts and vault endpoints.
 
 ## Supported generation types
 
 | Type | `generationType` value | Notes |
 |------|------------------------|-------|
-| Image | `image` | Static image output. Supports aspect ratio, batch count, and image-to-image inputs. |
+| Image | `image` | Static image output. Supports aspect ratio, batch count, and image-to-image inputs. Default when `generationType` is omitted. |
 | Video | `video` | Video clip output. Model availability varies — check fal.ai for supported video endpoints. |
 
 ## Key parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `modelId` | string | The fal.ai model endpoint to run (e.g., `fal-ai/recraft/v4.1/text-to-image`). Required. |
-| `prompt` | string | The instruction text for the model. Maximum 100,000 characters. Required. |
-| `generationType` | string | `image` or `video`. Required. |
-| `aspectRatio` | string | Output dimensions, e.g. `16:9`, `1:1`, `9:16`, `4:3`. |
-| `batchCount` | integer | Number of outputs to generate in one job. Accepted values: `1`–`4`. |
-| `imageInput` | string | A single image URL used as the base for image-to-image generation. |
-| `imageInputs` | array | Up to 7 image URLs for models that accept multiple input images. |
-| `negativePrompt` | string | Describes what you want the model to avoid in the output. |
-| `referenceImageUrls` | array | Up to 7 image URLs provided as style or content references. |
-| `parameters` | object | Model-specific parameters passed directly to the fal.ai endpoint. |
-| `vaultId` | string | The vault where output will be saved. Defaults to your General vault. |
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `modelId` | string | Yes | — | The fal.ai model endpoint to run (e.g., `fal-ai/recraft/v4.1/text-to-image`). |
+| `prompt` | string | Yes | — | The instruction text for the model. Maximum 100,000 characters. |
+| `generationType` | string | No | `image` | `image` or `video`. |
+| `aspectRatio` | string | No | `1:1` | Output dimensions, e.g. `16:9`, `1:1`, `9:16`, `4:3`. |
+| `batchCount` | integer | No | `1` | Number of outputs to generate in one job. Accepted values: `1`–`4`. |
+| `clientJobId` | string | No | — | An optional identifier you supply to correlate the job in your own system. |
+| `imageInput` | string (URI) | No | — | A single image URL used as the base for image-to-image generation. |
+| `imageInputs` | array (URI) | No | — | Up to 7 image URLs for models that accept multiple input images. |
+| `negativePrompt` | string | No | — | Describes what you want the model to avoid in the output. Maximum 100,000 characters. |
+| `referenceImageUrls` | array (URI) | No | — | Up to 7 image URLs provided as style or content references. |
+| `parameters` | object | No | — | Model-specific parameters passed directly to the fal.ai endpoint. |
+| `vaultId` | integer | No | — | The numeric ID of the vault where output will be saved. Defaults to your General vault. |
+| `imageEditEndpointId` | string | No | — | Specifies an image-editing endpoint variant when using image-edit workflows. |
 
 ## Generation response
 
-A successful `POST /api/v1/generations` returns HTTP `202 Accepted` with a JSON body:
+A successful `POST /api/v1/generations` returns HTTP `202 Accepted` with the following JSON envelope:
 
 | Field | Description |
 |-------|-------------|
-| `clientJobId` | A stable identifier you assign or that Prompt Bank generates. Use this to correlate the job in your own system. |
-| `falRequestId` | The request ID assigned by fal.ai. Useful for support or direct fal.ai status lookups. |
-| `statusUrl` | A URL you can poll to check whether the job is pending, running, or complete. |
+| `data.success` | `true` when the job was successfully queued. |
+| `data.clientJobId` | A stable identifier you assigned or that Prompt Bank generated. Use this to correlate the job in your own system. |
+| `data.falRequestId` | The request ID assigned by fal.ai. Useful for support or direct fal.ai status lookups. |
+| `data.statusUrl` | A URL you can poll to check whether the job is pending, running, or complete. |
+| `error` | `null` on success. Contains an error message string if the request failed. |
 
 ## Where output goes
 
-Generated media is saved to the vault identified by the `vaultId` you included in the request. If you omit `vaultId`, the output lands in your General vault. Each output is stored as a prompt entry so you can retrieve, share, or fork it like any other prompt.
+Generated media is saved asynchronously to the vault identified by the `vaultId` you included in the request. If you omit `vaultId`, the output lands in your General vault. Each output is stored as a prompt entry so you can retrieve, share, or fork it like any other prompt. Because saving is asynchronous, the asset may not appear immediately after the `statusUrl` reports completion — allow a brief moment for the vault to update.
 
 ## Example request and response
 
 ```bash
 curl -X POST https://www.promptbank.club/api/v1/generations \
-  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Authorization: Bearer pb_live_your_api_key" \
   -H "Content-Type: application/json" \
   -d '{
     "modelId": "fal-ai/recraft/v4.1/text-to-image",
@@ -67,15 +71,19 @@ curl -X POST https://www.promptbank.club/api/v1/generations \
     "generationType": "image",
     "aspectRatio": "16:9",
     "batchCount": 2,
-    "vaultId": "vlt_01hxyz9876abcd1234efgh"
+    "vaultId": 42
   }'
 ```
 
 ```json
 {
-  "clientJobId": "job_01hxyz5555aaaa6666bbbb",
-  "falRequestId": "fal-req-abc123def456",
-  "statusUrl": "https://www.promptbank.club/api/v1/generations/job_01hxyz5555aaaa6666bbbb/status"
+  "data": {
+    "success": true,
+    "clientJobId": "job_01hxyz5555aaaa6666bbbb",
+    "falRequestId": "fal-req-abc123def456",
+    "statusUrl": "https://www.promptbank.club/api/v1/generations/job_01hxyz5555aaaa6666bbbb/status"
+  },
+  "error": null
 }
 ```
 

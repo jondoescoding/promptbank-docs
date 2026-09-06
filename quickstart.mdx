@@ -1,5 +1,5 @@
 ---
-title: "Get Started with Prompt Bank in 5 Minutes"
+title: "Prompt Bank Quick Start: Your First API Call in 5 Minutes"
 sidebarTitle: "Quick Start"
 description: "Create your first prompt and queue an AI image generation with Prompt Bank. Covers API key setup, creating a prompt, and triggering a generation."
 ---
@@ -54,16 +54,23 @@ This guide walks you through the minimum steps to go from zero to a completed AI
       ```
     </CodeGroup>
 
-    A successful request returns `201 Created` with the new prompt object. Save the `id` field — you will need it in the next steps.
+    A successful request returns `201 Created` with the new prompt object wrapped in the standard response envelope. Save the `id` field — you will need it in the next steps.
 
     ```json
     {
-      "id": "prompt_01j9abc123def456",
-      "title": "Neon cityscape at dusk",
-      "prompt": "A sprawling cyberpunk city at dusk, neon signs reflecting in rain-soaked streets, cinematic lighting, ultra-detailed",
-      "promptType": "image",
-      "modelId": "fal-ai/recraft/v4.1/text-to-image",
-      "createdAt": "2024-11-15T10:23:00.000Z"
+      "data": {
+        "id": "prompt_01j9abc123def456",
+        "title": "Neon cityscape at dusk",
+        "prompt": "A sprawling cyberpunk city at dusk, neon signs reflecting in rain-soaked streets, cinematic lighting, ultra-detailed",
+        "promptType": "image",
+        "platform": null,
+        "status": "active",
+        "images": [],
+        "vaultIds": [],
+        "createdAt": "2024-11-15T10:23:00.000Z",
+        "updatedAt": "2024-11-15T10:23:00.000Z"
+      },
+      "error": null
     }
     ```
   </Step>
@@ -101,23 +108,23 @@ This guide walks you through the minimum steps to go from zero to a completed AI
       ```
     </CodeGroup>
 
-    The API responds immediately with a generation record in `queued` status. Poll the `id` endpoint or wait for the status to move to `completed` before retrieving the output URL.
+    The API responds immediately with `202 Accepted`. Use the `statusUrl` in the response to poll for the completed result.
 
     ```json
     {
-      "id": "gen_01j9xyz789ghi012",
-      "modelId": "fal-ai/recraft/v4.1/text-to-image",
-      "prompt": "A sprawling cyberpunk city at dusk, neon signs reflecting in rain-soaked streets, cinematic lighting, ultra-detailed",
-      "generationType": "image",
-      "status": "queued",
-      "outputUrl": null,
-      "createdAt": "2024-11-15T10:24:05.000Z"
+      "data": {
+        "success": true,
+        "clientJobId": "my-job-001",
+        "falRequestId": "fal_req_abc123xyz",
+        "statusUrl": "https://queue.fal.run/fal-ai/recraft/v4.1/text-to-image/requests/fal_req_abc123xyz/status"
+      },
+      "error": null
     }
     ```
   </Step>
 
   <Step title="Save your prompt to a vault">
-    Vaults keep your prompts organized. Once you have a vault ID (create one in the dashboard or via `POST /api/v1/vaults`), save your prompt to it by calling the save endpoint with the prompt's ID in the path.
+    Vaults keep your prompts organized. Once you have a vault ID (create one in the dashboard or via `POST /api/v1/vaults`), save your prompt to it by calling the save endpoint with the prompt's ID in the path. The `vaultId` must be an integer.
 
     <CodeGroup>
       ```bash curl
@@ -125,7 +132,7 @@ This guide walks you through the minimum steps to go from zero to a completed AI
         -H "Authorization: Bearer pb_live_..." \
         -H "Content-Type: application/json" \
         -d '{
-          "vaultId": "vault_01j9mno345pqr678"
+          "vaultId": 42
         }'
       ```
 
@@ -139,7 +146,7 @@ This guide walks you through the minimum steps to go from zero to a completed AI
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            vaultId: 'vault_01j9mno345pqr678',
+            vaultId: 42,
           }),
         }
       );
@@ -152,9 +159,13 @@ This guide walks you through the minimum steps to go from zero to a completed AI
 
     ```json
     {
-      "promptId": "prompt_01j9abc123def456",
-      "vaultId": "vault_01j9mno345pqr678",
-      "savedAt": "2024-11-15T10:25:30.000Z"
+      "data": {
+        "id": "prompt_01j9abc123def456",
+        "title": "Neon cityscape at dusk",
+        "vaultIds": [42],
+        "updatedAt": "2024-11-15T10:25:30.000Z"
+      },
+      "error": null
     }
     ```
   </Step>

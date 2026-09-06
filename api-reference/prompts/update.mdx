@@ -1,7 +1,7 @@
 ---
-title: "PATCH /api/v1/prompts/{promptId} — Update a Prompt"
+title: "Update Prompt — PATCH /api/v1/prompts/{promptId}"
 sidebarTitle: "Update Prompt"
-description: "PATCH /api/v1/prompts/{promptId} — update one or more fields of an existing prompt. Send only the fields you want to change."
+description: "Partially update a prompt with PATCH. Send only the fields you want to change — omitted fields stay untouched. Returns the full updated prompt object."
 ---
 
 Partially update an existing prompt. You only need to include the fields you want to change — any fields you omit remain exactly as they are. This makes it easy to rename a prompt, adjust an aspect ratio, or swap out the model without having to re-send the entire object.
@@ -33,7 +33,7 @@ All body fields are optional. Send only what you want to change.
 </ParamField>
 
 <ParamField body="platform" type="string">
-  Updated platform label. Maximum **80** characters.
+  Updated platform label.
 </ParamField>
 
 <ParamField body="modelId" type="string">
@@ -45,7 +45,7 @@ All body fields are optional. Send only what you want to change.
 </ParamField>
 
 <ParamField body="vaultId" type="integer">
-  Move the prompt into a different vault by supplying a new vault ID.
+  Add the prompt to the vault with this ID. To remove a prompt from a vault, use the vault membership endpoint instead.
 </ParamField>
 
 <ParamField body="imageUrl" type="string">

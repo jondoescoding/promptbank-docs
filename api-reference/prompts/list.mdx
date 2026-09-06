@@ -1,10 +1,16 @@
 ---
-title: "GET /api/v1/prompts — List Your Prompts"
+title: "List Prompts — GET /api/v1/prompts | Prompt Bank"
 sidebarTitle: "List Prompts"
-description: "GET /api/v1/prompts — list your prompts with optional filtering by vault, type, and cursor pagination. Returns an array of prompt objects."
+description: "Retrieve a paginated list of your prompts. Filter by vault or type, and use cursor-based pagination to walk through large collections efficiently."
 ---
 
 Retrieve a paginated list of all prompts belonging to your account. You can narrow results by vault or prompt type, and use cursor-based pagination to walk through large collections efficiently.
+
+<Note>
+  **GET** `https://www.promptbank.club/api/v1/prompts`
+</Note>
+
+## Query Parameters
 
 <ParamField query="limit" type="integer" default={20}>
   The number of prompts to return per page. Must be between **1** and **100**.
@@ -21,12 +27,6 @@ Retrieve a paginated list of all prompts belonging to your account. You can narr
 <ParamField query="type" type="string">
   Filter results by prompt type. Accepted values: `image`, `text`, `video`.
 </ParamField>
-
-## Endpoint
-
-<Note>
-  **GET** `https://www.promptbank.club/api/v1/prompts`
-</Note>
 
 ## Example Request
 

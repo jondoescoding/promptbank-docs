@@ -4,11 +4,11 @@ sidebarTitle: "Generate Media"
 description: "Learn how to queue AI image and video generations, use image inputs for img2img, set aspect ratios and batch counts, and retrieve outputs from your vault."
 ---
 
-The Prompt Bank generation API lets you queue image and video creation jobs with a single `POST` request. Your job is dispatched to fal.ai, processed asynchronously, and the output is saved directly to the vault you specify. This guide covers every major generation scenario with complete, ready-to-run curl examples.
+The Prompt Bank generation API lets you queue image and video creation jobs with a single `POST` request to `/api/v1/generations`. Your job is dispatched asynchronously to fal.ai, and the output is saved directly to the vault you specify once processing completes. This guide covers every major generation scenario with complete, ready-to-run curl examples.
 
 ## Generate an image
 
-Send a `POST /api/v1/generations` request with `generationType: "image"` and a fal.ai `modelId`. The example below uses Recraft v4.1:
+Send a `POST /api/v1/generations` request with `generationType: "image"` and a fal.ai `modelId`. The request requires the `prompts:write` scope. The example below uses Recraft v4.1:
 
 ```bash
 curl -X POST https://www.promptbank.club/api/v1/generations \
@@ -19,19 +19,25 @@ curl -X POST https://www.promptbank.club/api/v1/generations \
     "prompt": "A vast cyberpunk city at dusk, towering neon-lit skyscrapers reflected in rain-soaked streets, volumetric fog, cinematic composition, 8k detail",
     "generationType": "image",
     "aspectRatio": "16:9",
-    "vaultId": "vlt_01hxyz9876abcd1234efgh"
+    "vaultId": 42
   }'
 ```
 
+The API responds with `202 Accepted` to confirm your job is queued:
+
 ```json
 {
-  "clientJobId": "job_01hxyz5555aaaa6666bbbb",
-  "falRequestId": "fal-req-abc123def456",
-  "statusUrl": "https://www.promptbank.club/api/v1/generations/job_01hxyz5555aaaa6666bbbb/status"
+  "data": {
+    "success": true,
+    "clientJobId": "my-job-001",
+    "falRequestId": "fal-req-abc123def456",
+    "statusUrl": "https://www.promptbank.club/api/v1/generations/my-job-001/status"
+  },
+  "error": null
 }
 ```
 
-The `202 Accepted` response confirms your job is queued. The generated image will appear in `vlt_01hxyz9876abcd1234efgh` once the fal.ai job completes.
+The generated image will appear in vault `42` once the fal.ai job completes. Use the `statusUrl` from the response to check progress.
 
 ## Generate a video
 
@@ -46,11 +52,11 @@ curl -X POST https://www.promptbank.club/api/v1/generations \
     "prompt": "A slow aerial pan over a rain-soaked cyberpunk city at night, neon signs flickering, steam rising from grates, cinematic",
     "generationType": "video",
     "aspectRatio": "16:9",
-    "vaultId": "vlt_01hxyz9876abcd1234efgh"
+    "vaultId": 42
   }'
 ```
 
-Video jobs typically take longer to process than image jobs. Use the returned `statusUrl` to check progress.
+Video jobs typically take longer to process than image jobs. Use the returned `statusUrl` to check progress, or wait for the asset to appear in your vault.
 
 ## Image-to-image
 
@@ -68,7 +74,7 @@ curl -X POST https://www.promptbank.club/api/v1/generations \
     "generationType": "image",
     "imageInput": "https://cdn.promptbank.club/uploads/my-photo.jpg",
     "aspectRatio": "1:1",
-    "vaultId": "vlt_01hxyz9876abcd1234efgh"
+    "vaultId": 42
   }'
 ```
 
@@ -106,7 +112,7 @@ curl -X POST https://www.promptbank.club/api/v1/generations \
     "generationType": "image",
     "aspectRatio": "4:3",
     "batchCount": 4,
-    "vaultId": "vlt_01hxyz9876abcd1234efgh"
+    "vaultId": 42
   }'
 ```
 
@@ -114,7 +120,7 @@ All four images are saved to the specified vault when the job completes.
 
 ## Saving to a specific vault
 
-Supply a `vaultId` in your request to direct the output to a particular vault. If you omit `vaultId`, the output is saved to your General vault (the system vault created automatically for your account):
+Supply an integer `vaultId` in your request to direct the output to a particular vault. If you omit `vaultId`, the output is saved to your General vault — the system vault created automatically for every account:
 
 ```bash
 curl -X POST https://www.promptbank.club/api/v1/generations \
@@ -124,37 +130,25 @@ curl -X POST https://www.promptbank.club/api/v1/generations \
     "modelId": "fal-ai/recraft/v4.1/text-to-image",
     "prompt": "Minimalist product shot, white background, soft shadows",
     "generationType": "image",
-    "vaultId": "vlt_01hxyz1111kkkk0000llll"
+    "vaultId": 99
   }'
 ```
 
-You can retrieve the output later by listing prompts in that vault: `GET /api/v1/prompts?vaultId=vlt_01hxyz1111kkkk0000llll`.
+You can retrieve the output later by listing prompts in that vault: `GET /api/v1/prompts?vaultId=99`.
 
 ## Tracking the generation
 
-The `statusUrl` in the response gives you a live view of your job's state:
+The `202 Accepted` response includes a `statusUrl` you can poll to check the state of your job:
 
 ```bash
-curl "https://www.promptbank.club/api/v1/generations/job_01hxyz5555aaaa6666bbbb/status" \
+curl "https://www.promptbank.club/api/v1/generations/my-job-001/status" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-```json
-{
-  "clientJobId": "job_01hxyz5555aaaa6666bbbb",
-  "status": "completed",
-  "falRequestId": "fal-req-abc123def456",
-  "outputUrls": [
-    "https://cdn.promptbank.club/outputs/gen-01hxyz.webp",
-    "https://cdn.promptbank.club/outputs/gen-01hxyz-2.webp"
-  ]
-}
-```
-
-Possible `status` values are `queued`, `running`, `completed`, and `failed`. Poll the `statusUrl` until the status reaches a terminal state, or wait for the assets to appear in your vault.
+Poll the `statusUrl` until the job reaches a terminal state, or simply wait for the generated asset to appear in your vault.
 
 <Tip>
-The `clientJobId` is your stable handle for a generation job. Store it in your own database alongside the user action or workflow step that triggered the generation. You can use it to look up the job status, correlate logs, and avoid submitting duplicate requests.
+The `clientJobId` is an **optional** identifier you supply when submitting the generation request. Providing your own value (for example, a UUID tied to a user action in your application) lets you correlate the job back to your own records, deduplicate retries, and look up the `statusUrl` by a stable key you control. If you omit `clientJobId`, one is generated automatically and returned in the `202` response.
 </Tip>
 
 ## Next steps
