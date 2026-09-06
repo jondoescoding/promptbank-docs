@@ -1,0 +1,78 @@
+---
+title: "API Key Authentication for the Prompt Bank API"
+sidebarTitle: "Authentication"
+description: "Prompt Bank uses Bearer token authentication. Pass your API key in the Authorization header on every request. Learn how to create and manage API keys."
+---
+
+Prompt Bank authenticates every request using an API key passed as a Bearer token. You must include your API key in the `Authorization` header on every request. Requests without a valid key are rejected with `401 Unauthorized`.
+
+## Authorization header format
+
+Set the `Authorization` header to `Bearer` followed by your API key:
+
+```
+Authorization: Bearer <your-api-key>
+```
+
+API keys follow the format `pb_live_<publicid>_<secret>`. Keep the full string — including the `pb_live_` prefix — as the token value.
+
+<CodeGroup>
+
+```bash cURL
+curl https://www.promptbank.club/api/v1/prompts \
+  -H "Authorization: Bearer pb_live_publicid_secret"
+```
+
+```javascript JavaScript (fetch)
+const response = await fetch("https://www.promptbank.club/api/v1/prompts", {
+  headers: {
+    Authorization: "Bearer pb_live_publicid_secret",
+  },
+});
+
+const { data, error } = await response.json();
+```
+
+```python Python (requests)
+import requests
+
+resp = requests.get(
+    "https://www.promptbank.club/api/v1/prompts",
+    headers={"Authorization": "Bearer pb_live_publicid_secret"},
+)
+payload = resp.json()  # { "data": [...], "error": null }
+```
+
+</CodeGroup>
+
+## API key scopes
+
+Each API key carries one or more scopes that control which operations it can perform.
+
+| Scope | Permitted operations |
+|-------|----------------------|
+| `prompts:read` | Read prompts and vaults |
+| `prompts:write` | Create, update, and delete prompts and vaults |
+
+Write endpoints — such as `POST /prompts` or `DELETE /vaults/{id}` — require the `prompts:write` scope. Sending a request with a read-only key to a write endpoint returns `401 Unauthorized`.
+
+## Creating API keys
+
+You create API keys through the Prompt Bank dashboard or programmatically via the API. Key creation is a **browser-session-only** operation: `POST /api/v1/api-keys` is only available when authenticated with a valid browser session and cannot be called with an existing API key.
+
+<Warning>
+  The raw API key value is returned **only once**, immediately after creation. Prompt Bank does not store the secret portion and cannot show it to you again. Copy and store your key in a secure location such as a secrets manager or encrypted environment variable before closing the creation response.
+</Warning>
+
+See the [API Keys reference](/api-reference/api-keys) for full details on creating, listing, and revoking keys.
+
+## 401 Unauthorized
+
+If you receive a `401 Unauthorized` response, the most common causes are:
+
+- **Missing header** — The `Authorization` header was not included in the request.
+- **Malformed header** — The value does not start with `Bearer ` (note the space), or the key is truncated.
+- **Invalid or revoked key** — The key does not exist or has been revoked in the dashboard.
+- **Insufficient scope** — The key exists but lacks the `prompts:write` scope required by the endpoint.
+
+To resolve a `401`, verify that the header is present and correctly formatted, confirm the key is active in your dashboard, and ensure the key has the required scope for the operation you are attempting.

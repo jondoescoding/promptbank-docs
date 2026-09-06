@@ -1,0 +1,103 @@
+---
+title: "Authenticate Requests to the Prompt Bank API"
+sidebarTitle: "Authentication"
+description: "All Prompt Bank API requests use Bearer token authentication. Learn how to create API keys, pass them in requests, and handle authentication errors."
+---
+
+Every request to the Prompt Bank API must be authenticated using a Bearer token. You obtain a token by creating an API key through your account dashboard or via the `POST /api/v1/api-keys` endpoint (session-authenticated). Once you have a key, you include it in the `Authorization` header of every HTTP request — no cookies, no OAuth redirects, just a single header.
+
+## Create an API key
+
+API keys are created either from the **API Keys** section of your account settings at [promptbank.club](https://www.promptbank.club), or programmatically through the API itself.
+
+The `POST /api/v1/api-keys` endpoint requires an active browser session (cookie-based) rather than a Bearer token — it is the bootstrapping step that produces keys for all subsequent requests. Pass a human-readable `name` in the request body so you can identify the key later.
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/api-keys \
+  -H "Content-Type: application/json" \
+  --cookie "session=<your-session-cookie>" \
+  -d '{
+    "name": "my-automation-key"
+  }'
+```
+
+See the [API Keys reference](/api-reference/api-keys) for the full request and response schema.
+
+<Warning>
+  The complete API key — including the secret portion — is returned **only once**, at the moment of creation. Copy and store it securely before closing the response. If you lose the key, you must delete it and create a new one.
+</Warning>
+
+## Use your API key
+
+Pass your API key as a Bearer token in the `Authorization` header of every request. The header value follows this pattern:
+
+```
+Authorization: Bearer pb_live_publicid_secret
+```
+
+The key format is `pb_live_` followed by a public identifier, an underscore, and the secret portion. The full string is what you pass after `Bearer`.
+
+<CodeGroup>
+  ```bash curl
+  curl https://www.promptbank.club/api/v1/prompts \
+    -H "Authorization: Bearer pb_live_publicid_secret"
+  ```
+
+  ```javascript fetch
+  const response = await fetch('https://www.promptbank.club/api/v1/prompts', {
+    headers: {
+      'Authorization': 'Bearer pb_live_publicid_secret',
+    },
+  });
+
+  const data = await response.json();
+  ```
+
+  ```python python
+  import urllib.request
+  import json
+
+  req = urllib.request.Request(
+      'https://www.promptbank.club/api/v1/prompts',
+      headers={'Authorization': 'Bearer pb_live_publicid_secret'},
+  )
+
+  with urllib.request.urlopen(req) as res:
+      data = json.loads(res.read())
+  ```
+</CodeGroup>
+
+## Scopes
+
+API keys carry permission scopes that control which operations they can perform. The scope model follows a `resource:action` naming convention.
+
+| Scope | Description |
+|---|---|
+| `prompts:read` | Read prompts and vault contents. Granted to all keys by default. |
+| `prompts:write` | Create, update, and delete prompts. Required for any write operation on prompts. |
+| `generations:write` | Queue new generation jobs. Required to call `POST /api/v1/generations`. |
+| `vaults:write` | Create and modify vaults. Required to save prompts to vaults. |
+
+If a request requires a scope that your key does not have, the API returns `403 Forbidden`. You can verify a key's assigned scopes by calling `GET /api/v1/api-keys/{keyId}`.
+
+## Security best practices
+
+<Tip>
+  Treat API keys like passwords. Never hard-code a key directly in your source code or commit it to a version control repository. Use environment variables or a secrets manager (such as AWS Secrets Manager, HashiCorp Vault, or your CI platform's secret store) to inject keys at runtime. Rotate keys regularly, and immediately revoke any key you suspect has been compromised.
+</Tip>
+
+A few additional practices to keep your keys secure:
+
+- **Use one key per environment.** Create separate keys for development, staging, and production so you can revoke a single environment's access without affecting others.
+- **Apply the principle of least privilege.** Only assign the scopes a key actually needs. A key used only for reading prompts should not have `generations:write`.
+- **Audit key usage.** Review the list of active API keys periodically and delete any that are no longer in use.
+
+## Error reference
+
+The following HTTP status codes relate directly to authentication and authorization failures.
+
+| Status code | Meaning | Common cause |
+|---|---|---|
+| `401 Unauthorized` | Missing or invalid Bearer token | The `Authorization` header is absent, the token is malformed, or the key has been revoked. |
+| `403 Forbidden` | Authenticated but not authorized | Your key does not have the required scope for the requested operation. |
+| `404 Not Found` | Resource does not exist | The resource ID in the path does not exist, or it belongs to another account your key cannot access. |

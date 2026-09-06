@@ -1,0 +1,60 @@
+---
+title: "POST /api/v1/prompts/{promptId}/save — Save Prompt to Vault"
+sidebarTitle: "Save to Vault"
+description: "POST /api/v1/prompts/{promptId}/save — add an existing prompt to a vault by vault ID. The prompt can belong to multiple vaults simultaneously."
+---
+
+Add an existing prompt to a vault so you can organise and share it alongside related prompts. A single prompt can belong to any number of vaults at the same time — saving it to a new vault never removes it from the vaults it already belongs to.
+
+<Note>
+  A prompt's full list of current vault memberships is always reflected in the `vaultIds` array on the prompt object. You can verify the save succeeded by checking that the target vault ID appears in that array after the call.
+</Note>
+
+<Note>
+  **POST** `https://www.promptbank.club/api/v1/prompts/{promptId}/save`
+</Note>
+
+## Path Parameters
+
+<ParamField path="promptId" type="integer" required>
+  The unique numeric ID of the prompt you want to save to a vault.
+</ParamField>
+
+## Request Body
+
+<ParamField body="vaultId" type="integer" required>
+  The ID of the vault to add the prompt to.
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/prompts/42/save \
+  -H 'Authorization: Bearer pb_live_...' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "vaultId": 15
+  }'
+```
+
+## Example Response
+
+```json
+{
+  "data": {
+    "id": 42,
+    "title": "Cinematic sunset portrait",
+    "prompt": "A cinematic portrait at golden hour, warm tones, shallow depth of field",
+    "promptType": "image",
+    "platform": "fal.ai",
+    "status": "active",
+    "images": [],
+    "vaultIds": [7, 15],
+    "createdAt": "2024-06-01T12:00:00Z",
+    "updatedAt": "2024-06-04T11:30:00Z"
+  },
+  "error": null
+}
+```
+
+A successful save returns HTTP **200 OK** with the updated prompt object. Notice that `vaultIds` now contains both the original vault (`7`) and the newly added vault (`15`).

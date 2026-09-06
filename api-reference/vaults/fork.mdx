@@ -1,0 +1,54 @@
+---
+title: "POST /api/v1/vaults/{vaultId}/fork — Fork a Vault"
+sidebarTitle: "Fork Vault"
+description: "POST /api/v1/vaults/{vaultId}/fork — copy a public or unlisted vault and all its prompts into your account. Returns the new forked vault object."
+---
+
+Fork any public or unlisted vault to create your own independent copy, complete with all of the original vault's prompts. The forked vault belongs entirely to your account — you can rename it, edit its prompts, change its visibility, or delete it without affecting the source vault. This endpoint is the primary way to build on top of community-shared collections.
+
+<Note>
+  Forking copies all prompts from the source vault into your account as new, independent prompt records. Changes you make to prompts in the forked vault do not propagate back to the original, and vice versa.
+</Note>
+
+## Endpoint
+
+```
+POST https://www.promptbank.club/api/v1/vaults/{vaultId}/fork
+```
+
+## Path Parameters
+
+<ParamField path="vaultId" type="integer" required>
+  The numeric ID of the public or unlisted vault you want to fork.
+</ParamField>
+
+## Request Example
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/vaults/7/fork \
+  -H 'Authorization: Bearer pb_live_...'
+```
+
+## Response Example
+
+A `201 Created` response is returned on success. The `data` field contains the newly created vault in your account. Note that the new vault starts with its visibility set to `private`.
+
+```json
+{
+  "data": {
+    "id": 42,
+    "name": "Portrait Prompts",
+    "description": "Curated prompts for portrait photography and art",
+    "slug": "portrait-prompts-1",
+    "visibility": "private",
+    "accessType": null,
+    "isLocked": false,
+    "coverImageUrl": null,
+    "isSystem": false,
+    "promptCount": 12,
+    "createdAt": "2024-06-01T09:15:00Z",
+    "updatedAt": "2024-06-01T09:15:00Z"
+  },
+  "error": null
+}
+```

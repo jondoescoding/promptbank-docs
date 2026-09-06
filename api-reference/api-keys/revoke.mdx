@@ -1,0 +1,47 @@
+---
+title: "DELETE /api/v1/api-keys/{keyId} — Revoke an API Key"
+sidebarTitle: "Revoke Key"
+description: "DELETE /api/v1/api-keys/{keyId} — permanently revoke an API key so it can no longer authenticate requests. Browser session required."
+---
+
+Revoking an API key permanently disables it. Any request that sends the revoked key in an `Authorization` header will immediately receive a `401 Unauthorized` response. Use this endpoint when you suspect a key has been compromised, when you are rotating credentials, or when you want to retire a key that is no longer in use. Because this action cannot be undone, you should create a replacement key and deploy it to all dependent systems before revoking the old one.
+
+## Endpoint
+
+```
+DELETE https://www.promptbank.club/api/v1/api-keys/{keyId}
+```
+
+**Authentication:** SessionAuth — browser session cookie (not an API key)
+
+## Path Parameters
+
+<ParamField path="keyId" type="string (UUID)" required>
+  The unique identifier of the API key you want to revoke. You can find this value in the `id` field returned by the [List Keys](/api-reference/api-keys/list) endpoint.
+</ParamField>
+
+## Response — 200 OK
+
+A successful revocation returns HTTP `200` with a confirmation body.
+
+```json
+{
+  "data": {
+    "success": true
+  }
+}
+```
+
+## Example
+
+```bash
+curl -X DELETE https://www.promptbank.club/api/v1/api-keys/f47ac10b-58cc-4372-a567-0e02b2c3d479
+```
+
+<Warning>
+  **Revocation is immediate and permanent.** The key stops working the instant this request succeeds — there is no grace period and no way to undo it. Every service, CI pipeline, or script that uses the revoked key will begin receiving `401 Unauthorized` errors immediately. Make sure all dependent systems have been updated to a new key before you revoke the old one.
+</Warning>
+
+<Tip>
+  Follow a **rotate-then-revoke** workflow to avoid downtime: call [Create Key](/api-reference/api-keys/create) to generate a replacement, deploy the new key to all systems that depend on it, verify the new key is working correctly, and only then revoke the old key.
+</Tip>

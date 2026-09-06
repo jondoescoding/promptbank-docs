@@ -1,0 +1,150 @@
+---
+title: "POST /api/v1/generations — Queue an AI Generation"
+sidebarTitle: "Queue Generation"
+description: "POST /api/v1/generations — queue an AI image or video generation. Requires prompts:write scope. Output is saved asynchronously to a vault."
+---
+
+The generations endpoint lets you kick off an AI image or video generation without waiting for the result. You submit your model, prompt, and any options; Prompt Bank enqueues the job, forwards it to fal.ai, and saves the finished output directly to your vault. Your application gets a job ID and a status URL back immediately so it can move on while the generation runs in the background.
+
+## Endpoint
+
+```
+POST https://www.promptbank.club/api/v1/generations
+```
+
+**Required scope:** `prompts:write`
+
+## Request Body
+
+<ParamField body="modelId" type="string" required>
+  The fal.ai model endpoint ID to use for this generation. For example: `fal-ai/recraft/v4.1/text-to-image`. You can find supported model IDs in your Prompt Bank dashboard or in the [fal.ai model library](https://fal.ai/models).
+</ParamField>
+
+<ParamField body="prompt" type="string" required>
+  The generation prompt text. Maximum 100,000 characters. Describes what you want the model to produce.
+</ParamField>
+
+<ParamField body="generationType" type="string" default="image">
+  The type of output to generate. Accepted values: `image`, `video`. Defaults to `image`.
+</ParamField>
+
+<ParamField body="clientJobId" type="string">
+  An optional job correlation ID you supply for idempotency and tracking. If omitted, Prompt Bank generates one for you. The value is echoed back in the response and can be used to correlate status checks with the original request.
+</ParamField>
+
+<ParamField body="negativePrompt" type="string">
+  A description of things you want the model to exclude from the output. Maximum 100,000 characters. Not all models support this field; it is silently ignored when unsupported.
+</ParamField>
+
+<ParamField body="imageInput" type="string">
+  A URI pointing to a source image for image-to-image generations. Must be a publicly accessible URL or a Prompt Bank upload URL obtained from the [Upload Image](/api-reference/uploads/images) endpoint.
+</ParamField>
+
+<ParamField body="imageInputs" type="array">
+  An array of image URIs for models that accept multiple input images (e.g. multi-reference or inpainting workflows). Maximum 7 items. Each item follows the same URI rules as `imageInput`.
+</ParamField>
+
+<ParamField body="aspectRatio" type="string" default="1:1">
+  The target aspect ratio of the generated output. Common values: `"1:1"`, `"9:16"`, `"16:9"`, `"4:5"`, `"3:2"`. Support varies by model.
+</ParamField>
+
+<ParamField body="batchCount" type="integer" default="1">
+  Number of outputs to generate in a single job. Accepted range: `1`–`4`. Each output is saved as a separate asset in the destination vault.
+</ParamField>
+
+<ParamField body="parameters" type="object">
+  An object of model-specific extra parameters passed through directly to the fal.ai API. The accepted keys and value types depend on the chosen model. Refer to the fal.ai model documentation for available options.
+</ParamField>
+
+<ParamField body="vaultId" type="integer">
+  The numeric ID of the vault where the finished output should be saved. If omitted, the output is saved to your account's General vault.
+</ParamField>
+
+<ParamField body="referenceImageUrls" type="array">
+  An array of image URIs used as style or content references for models that support reference-image conditioning. Maximum 7 items.
+</ParamField>
+
+<ParamField body="imageEditEndpointId" type="string">
+  The model endpoint ID to use for image editing workflows. Supply this when you want to apply an editing model on top of `imageInput` rather than run a standard text-to-image generation.
+</ParamField>
+
+## Response — 202 Accepted
+
+<ResponseField name="data.success" type="boolean">
+  Always `true` for a successfully queued generation.
+</ResponseField>
+
+<ResponseField name="data.clientJobId" type="string">
+  The job correlation ID. This is the value you supplied in the request, or an auto-generated UUID if you did not supply one.
+</ResponseField>
+
+<ResponseField name="data.falRequestId" type="string">
+  The underlying fal.ai request ID. You can use this value to look up detailed processing logs in the fal.ai dashboard.
+</ResponseField>
+
+<ResponseField name="data.statusUrl" type="string">
+  A URL you can poll to check the status of this generation. The generation is complete when the status transitions to `completed`, at which point the output is available in your vault.
+</ResponseField>
+
+## Examples
+
+**Basic image generation**
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/generations \
+  -H "Authorization: Bearer pb_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "modelId": "fal-ai/recraft/v4.1/text-to-image",
+    "prompt": "A photorealistic golden retriever puppy sitting in a sunlit meadow",
+    "generationType": "image",
+    "aspectRatio": "4:5",
+    "batchCount": 2
+  }'
+```
+
+```json
+{
+  "data": {
+    "success": true,
+    "clientJobId": "7f3a1c2e-84d0-4b9e-b12f-3c9e7a4d5f01",
+    "falRequestId": "fal_req_0abc123def456789",
+    "statusUrl": "https://www.promptbank.club/api/v1/generations/7f3a1c2e-84d0-4b9e-b12f-3c9e7a4d5f01/status"
+  }
+}
+```
+
+**Video generation with a client-supplied job ID**
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/generations \
+  -H "Authorization: Bearer pb_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "modelId": "fal-ai/kling-video/v2/standard/text-to-video",
+    "prompt": "A slow cinematic pan over a misty mountain range at dawn",
+    "generationType": "video",
+    "aspectRatio": "16:9",
+    "clientJobId": "my-campaign-job-42",
+    "vaultId": 819
+  }'
+```
+
+```json
+{
+  "data": {
+    "success": true,
+    "clientJobId": "my-campaign-job-42",
+    "falRequestId": "fal_req_9xyz987uvw654321",
+    "statusUrl": "https://www.promptbank.club/api/v1/generations/my-campaign-job-42/status"
+  }
+}
+```
+
+<Warning>
+  This endpoint is **asynchronous**. A 202 response means the job has been accepted and queued — the finished image or video is **not** in the response body. The output appears in your vault only after the generation completes. Poll `data.statusUrl` or listen for a webhook to know when it is ready.
+</Warning>
+
+<Tip>
+  Always supply a `clientJobId` when you fire off multiple jobs in quick succession. A stable, unique ID per job lets you match status updates back to the original request without relying on the auto-generated UUID.
+</Tip>

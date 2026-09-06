@@ -1,0 +1,65 @@
+---
+title: "GET /api/v1/vaults/{vaultId} — Retrieve a Vault"
+sidebarTitle: "Get Vault"
+description: "GET /api/v1/vaults/{vaultId} — fetch a single vault by its numeric ID. Returns vault details including visibility, prompt count, and system status."
+---
+
+Fetch the full details of a single vault by its numeric ID. You can retrieve any vault you own regardless of its visibility setting. The response includes the current prompt count, lock status, cover image URL, and all other metadata associated with the vault.
+
+## Endpoint
+
+```
+GET https://www.promptbank.club/api/v1/vaults/{vaultId}
+```
+
+## Path Parameters
+
+<ParamField path="vaultId" type="integer" required>
+  The numeric ID of the vault you want to retrieve.
+</ParamField>
+
+## Request Example
+
+```bash
+curl https://www.promptbank.club/api/v1/vaults/7 \
+  -H 'Authorization: Bearer pb_live_...'
+```
+
+## Response Example
+
+```json
+{
+  "data": {
+    "id": 7,
+    "name": "Portrait Prompts",
+    "description": "Curated prompts for portrait photography and art",
+    "slug": "portrait-prompts",
+    "visibility": "public",
+    "accessType": null,
+    "isLocked": false,
+    "coverImageUrl": null,
+    "isSystem": false,
+    "promptCount": 12,
+    "createdAt": "2024-05-01T10:00:00Z",
+    "updatedAt": "2024-05-15T08:30:00Z"
+  },
+  "error": null
+}
+```
+
+### Response Fields
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | integer | Unique numeric identifier for the vault. |
+| `name` | string | Display name of the vault. |
+| `description` | string \| null | Optional description of the vault. |
+| `slug` | string | URL-safe identifier derived from the vault name. |
+| `visibility` | string | One of `private`, `unlisted`, or `public`. |
+| `accessType` | string \| null | Access control type, if applicable. |
+| `isLocked` | boolean | Whether the vault is locked from edits. |
+| `coverImageUrl` | string \| null | URL of the vault's cover image, if set. |
+| `isSystem` | boolean | `true` for vaults automatically created by Prompt Bank. |
+| `promptCount` | integer | Number of prompts currently in the vault. |
+| `createdAt` | string | ISO 8601 timestamp of vault creation. |
+| `updatedAt` | string | ISO 8601 timestamp of the last modification. |

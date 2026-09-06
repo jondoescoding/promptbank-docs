@@ -1,0 +1,68 @@
+---
+title: "Prompts: Reusable AI Instructions in Prompt Bank"
+sidebarTitle: "Prompts"
+description: "Prompts are the core unit in Prompt Bank. Learn about prompt types (text, image, video), fields like modelId and aspectRatio, and how prompts connect to vaults."
+---
+
+A prompt is the fundamental building block in Prompt Bank. It captures the instruction you send to an AI model — the text description, configuration, and any reference media — so you can store it, reuse it, and trigger generations from it at any time. Rather than rewriting the same prompt every time you call a model, you save it once and reference it by ID across your workflows.
+
+## Prompt types
+
+Every prompt has a `promptType` that describes the kind of output it is intended to produce.
+
+| Type | When to use |
+|------|-------------|
+| `text` | General-purpose text instructions, brainstorming prompts, or any prompt not tied to a specific media model. Good for storing reusable LLM instructions. |
+| `image` | Prompts targeted at image-generation models (e.g., Recraft, Flux). Supports `modelId`, `aspectRatio`, and `referenceMediaUrls` for visual context. |
+| `video` | Prompts for video-generation models. Works the same as image prompts but signals that the intended output is a video asset. |
+
+Choosing the correct type keeps your vault organized and lets the API surface the right generation options when you use a prompt to queue a job.
+
+## Key fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | string | Human-readable name for the prompt. Maximum 120 characters. |
+| `prompt` | string | The actual instruction text sent to the model. Maximum 15,000 characters. |
+| `promptType` | string | One of `image`, `text`, or `video`. |
+| `modelId` | string | The fal.ai model endpoint to use for generation (e.g., `fal-ai/recraft/v4.1/text-to-image`). |
+| `aspectRatio` | string | Desired output dimensions, such as `16:9`, `1:1`, or `9:16`. |
+| `platform` | string | Optional label for the target platform or use-case (e.g., `instagram`, `youtube`). |
+| `imageUrl` | string | A URL to the primary image associated with this prompt — typically the last generated output or a reference image. |
+| `referenceMediaUrls` | array | Up to 10 URLs pointing to reference images or videos that provide visual context for the model. |
+| `vaultId` | string | The ID of the vault this prompt belongs to. Omit to save to your General vault. |
+
+## Prompt lifecycle
+
+Working with a prompt follows a predictable three-step pattern:
+
+1. **Create** — Send a `POST /api/v1/prompts` request with your instruction text, type, and any model configuration. The API returns a prompt object with a unique `id`.
+2. **Save to a vault** — Prompts are saved into a vault automatically when you supply a `vaultId`, or land in your General vault by default. You can move them between vaults at any time.
+3. **Use in a generation** — Reference the prompt's text and configuration when calling `POST /api/v1/generations`. The generation runs asynchronously and saves its output back to a vault.
+
+## Example prompt object
+
+The following shows a complete image prompt as returned by the API:
+
+```json
+{
+  "id": "pmt_01hxyz1234abcd5678efgh",
+  "title": "Cyberpunk cityscape at dusk",
+  "prompt": "A vast cyberpunk city at dusk, towering neon-lit skyscrapers reflected in rain-soaked streets, volumetric fog, cinematic composition, 8k detail",
+  "promptType": "image",
+  "modelId": "fal-ai/recraft/v4.1/text-to-image",
+  "aspectRatio": "16:9",
+  "platform": "artstation",
+  "imageUrl": "https://cdn.promptbank.club/outputs/01hxyz1234.webp",
+  "referenceMediaUrls": [
+    "https://cdn.promptbank.club/refs/neon-ref-01.jpg"
+  ],
+  "vaultId": "vlt_01hxyz9876abcd1234efgh",
+  "createdAt": "2024-11-15T10:32:00Z",
+  "updatedAt": "2024-11-15T10:32:00Z"
+}
+```
+
+## Next steps
+
+See the [Manage Prompts guide](/guides/manage-prompts) for step-by-step instructions on creating, updating, filtering, and deleting prompts via the API.

@@ -1,0 +1,71 @@
+---
+title: "GET /api/v1/vaults/{vaultId}/prompts — List Vault Prompts"
+sidebarTitle: "List Vault Prompts"
+description: "GET /api/v1/vaults/{vaultId}/prompts — list all prompts inside a specific vault. Returns prompt objects ordered by pin status and creation date."
+---
+
+Retrieve all prompts currently inside a specific vault. Results are ordered so that pinned prompts appear first, followed by the remaining prompts sorted by the date they were added to the vault, newest first. This ordering mirrors how prompts appear in the Prompt Bank UI.
+
+## Endpoint
+
+```
+GET https://www.promptbank.club/api/v1/vaults/{vaultId}/prompts
+```
+
+## Path Parameters
+
+<ParamField path="vaultId" type="integer" required>
+  The numeric ID of the vault whose prompts you want to list.
+</ParamField>
+
+## Request Example
+
+```bash
+curl https://www.promptbank.club/api/v1/vaults/7/prompts \
+  -H 'Authorization: Bearer pb_live_...'
+```
+
+## Response Example
+
+The `data` field contains an array of prompt objects. Pinned prompts (`isPinned: true`) appear at the top of the list.
+
+```json
+{
+  "data": [
+    {
+      "id": 101,
+      "vaultPromptId": 55,
+      "title": "Golden Hour Portrait",
+      "body": "A warm golden hour portrait of a woman standing in a field of wheat, soft bokeh background, film grain, Kodak Portra 400",
+      "tags": ["portrait", "golden-hour", "photography"],
+      "isPinned": true,
+      "createdAt": "2024-05-02T12:00:00Z",
+      "updatedAt": "2024-05-10T08:00:00Z"
+    },
+    {
+      "id": 108,
+      "vaultPromptId": 61,
+      "title": "Studio Lighting Close-Up",
+      "body": "Close-up portrait with dramatic studio lighting, deep shadows, high contrast, black and white, sharp focus on eyes",
+      "tags": ["portrait", "studio", "monochrome"],
+      "isPinned": false,
+      "createdAt": "2024-05-12T15:30:00Z",
+      "updatedAt": "2024-05-12T15:30:00Z"
+    }
+  ],
+  "error": null
+}
+```
+
+### Prompt Object Fields
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | integer | The unique ID of the prompt record. |
+| `vaultPromptId` | integer | The unique ID of the vault–prompt membership record. Used when removing, moving, or pinning the prompt within this vault. |
+| `title` | string | The prompt's display title. |
+| `body` | string | The full text content of the prompt. |
+| `tags` | array of strings | Tags associated with the prompt. |
+| `isPinned` | boolean | Whether the prompt is pinned to the top of this vault. |
+| `createdAt` | string | ISO 8601 timestamp when the prompt was created. |
+| `updatedAt` | string | ISO 8601 timestamp of the last modification. |

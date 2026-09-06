@@ -1,0 +1,49 @@
+---
+title: "GET /api/v1/api-keys/{keyId} — Reveal an API Key"
+sidebarTitle: "Reveal Key"
+description: "GET /api/v1/api-keys/{keyId} — retrieve the stored secret for an API key you own. Browser session required. Never log or publish this response."
+---
+
+This endpoint retrieves the raw secret for an API key associated with your account. It exists to let you recover a key you created through the dashboard in a context where you did not immediately copy it. Like all key-management operations, it requires an active browser session so that it cannot be accessed programmatically using another API key. Treat the response with the same care as a password — do not log it, do not include it in error reports, and do not expose it to client-side code.
+
+## Endpoint
+
+```
+GET https://www.promptbank.club/api/v1/api-keys/{keyId}
+```
+
+**Authentication:** SessionAuth — browser session cookie (not an API key)
+
+## Path Parameters
+
+<ParamField path="keyId" type="string (UUID)" required>
+  The unique identifier of the API key you want to reveal. You can find this value in the `id` field returned by the [List Keys](/api-reference/api-keys/list) endpoint.
+</ParamField>
+
+## Response — 200 OK
+
+<ResponseField name="data.key" type="string">
+  The raw API key secret. This is the full value — including the `pb_live_` prefix — that you use in the `Authorization: Bearer` header when calling the Prompt Bank API.
+</ResponseField>
+
+## Example
+
+**Request**
+
+```bash
+curl https://www.promptbank.club/api/v1/api-keys/f47ac10b-58cc-4372-a567-0e02b2c3d479
+```
+
+**Response**
+
+```json
+{
+  "data": {
+    "key": "pb_live_f47ac10b58cc4372a5670e02b2c3d479abcdef12"
+  }
+}
+```
+
+<Warning>
+  **Treat this response as a credential.** Never log it, print it to a terminal that is screen-shared, or include it in error-tracking payloads. If you believe the key has been exposed, [revoke it](/api-reference/api-keys/revoke) immediately and issue a replacement.
+</Warning>

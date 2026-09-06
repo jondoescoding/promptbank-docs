@@ -1,0 +1,72 @@
+---
+title: "Pin and Unpin Prompts in a Vault — Prompt Bank API"
+sidebarTitle: "Pin Prompt"
+description: "POST and DELETE /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/pin — pin a prompt to the top of a vault or unpin it. Pinned prompts appear first in vault listings."
+---
+
+Pin a prompt to the top of a vault so it always appears first when the vault's contents are listed, or unpin it to restore the default sort order. Pinning is managed through the same path using two complementary HTTP methods: `POST` to pin and `DELETE` to unpin. You can pin as many prompts as you like within a vault — they will all appear at the top, ordered among themselves by pin date.
+
+## Endpoints
+
+```
+POST   https://www.promptbank.club/api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/pin
+DELETE https://www.promptbank.club/api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/pin
+```
+
+## Path Parameters
+
+Both endpoints share the same path parameters.
+
+<ParamField path="vaultId" type="integer" required>
+  The numeric ID of the vault that contains the prompt.
+</ParamField>
+
+<ParamField path="vaultPromptId" type="integer" required>
+  The numeric ID of the vault–prompt membership record. This is the `vaultPromptId` field returned when listing prompts in a vault.
+</ParamField>
+
+## Pin a Prompt
+
+Send a `POST` request to pin the prompt. If the prompt is already pinned, the request is a no-op and returns `200 OK`.
+
+### Request Example
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/vaults/7/prompts/55/pin \
+  -H 'Authorization: Bearer pb_live_...'
+```
+
+### Response Example
+
+```json
+{
+  "data": {
+    "vaultPromptId": 55,
+    "isPinned": true
+  },
+  "error": null
+}
+```
+
+## Unpin a Prompt
+
+Send a `DELETE` request to unpin the prompt and return it to the standard sort order. If the prompt is already unpinned, the request is a no-op and returns `200 OK`.
+
+### Request Example
+
+```bash
+curl -X DELETE https://www.promptbank.club/api/v1/vaults/7/prompts/55/pin \
+  -H 'Authorization: Bearer pb_live_...'
+```
+
+### Response Example
+
+```json
+{
+  "data": {
+    "vaultPromptId": 55,
+    "isPinned": false
+  },
+  "error": null
+}
+```

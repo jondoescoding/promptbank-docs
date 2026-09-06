@@ -1,0 +1,67 @@
+---
+title: "POST /api/v1/api-keys — Create an API Key"
+sidebarTitle: "Create Key"
+description: "POST /api/v1/api-keys — create a new API key for your account. Browser session required. The raw key is returned once and cannot be retrieved again."
+---
+
+Use this endpoint to generate a new API key for your account. You supply a human-readable name to help you identify the key later; Prompt Bank returns the raw key string in the response alongside the key's metadata. This is the **only time** the raw key value is returned — store it in a secrets manager or environment variable immediately. If you lose it, you will need to revoke the key and create a new one.
+
+## Endpoint
+
+```
+POST https://www.promptbank.club/api/v1/api-keys
+```
+
+**Authentication:** SessionAuth — browser session cookie (not an API key)
+
+## Request Body
+
+<ParamField body="name" type="string" required>
+  A descriptive label for the key, between 1 and 80 characters. Choose a name that identifies the system or purpose the key is used for, e.g. `"Production Backend"` or `"GitHub Actions CI"`.
+</ParamField>
+
+## Response — 201 Created
+
+<ResponseField name="data.key" type="string">
+  The raw API key string. This value is shown **once only** and cannot be retrieved again. Store it securely before closing the response.
+</ResponseField>
+
+<ResponseField name="data.apiKey" type="object">
+  Metadata about the newly created key. Contains the same fields as a key object returned by the [List Keys](/api-reference/api-keys/list) endpoint: `id`, `name`, `keyPrefix`, `scopes`, `lastUsedAt`, `revokedAt`, `expiresAt`, and `createdAt`.
+</ResponseField>
+
+## Example
+
+**Request**
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/api-keys \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Production Backend"
+  }'
+```
+
+**Response**
+
+```json
+{
+  "data": {
+    "key": "pb_live_f47ac10b58cc4372a5670e02b2c3d479abcdef12",
+    "apiKey": {
+      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "name": "Production Backend",
+      "keyPrefix": "pb_live_f47a",
+      "scopes": ["prompts:read", "prompts:write"],
+      "lastUsedAt": null,
+      "revokedAt": null,
+      "expiresAt": null,
+      "createdAt": "2024-06-10T15:00:00Z"
+    }
+  }
+}
+```
+
+<Warning>
+  **Store the raw key immediately.** The value in `data.key` is returned **once only** and is not recoverable after this response is closed. Prompt Bank stores only a secure hash of the key — it cannot be decrypted or displayed again. If you lose the key before storing it, [revoke it](/api-reference/api-keys/revoke) and create a new one.
+</Warning>

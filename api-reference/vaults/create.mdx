@@ -1,0 +1,64 @@
+---
+title: "POST /api/v1/vaults — Create a New Vault"
+sidebarTitle: "Create Vault"
+description: "POST /api/v1/vaults — create a new vault to organize prompts. Set a name, optional description, and visibility (private, unlisted, or public)."
+---
+
+Create a new vault to organize your prompts into a focused, shareable collection. You control who can see the vault by setting its `visibility` — keep it `private` for personal use, share a link with `unlisted`, or make it fully `public` for anyone to discover and fork. A successful request returns the newly created vault object with a `201 Created` status.
+
+## Endpoint
+
+```
+POST https://www.promptbank.club/api/v1/vaults
+```
+
+## Body Parameters
+
+<ParamField body="name" type="string" required>
+  The display name for the vault. Must be between 1 and 50 characters.
+</ParamField>
+
+<ParamField body="description" type="string | null">
+  An optional description of the vault's contents or purpose. Maximum 200 characters. Pass `null` or omit to leave it blank.
+</ParamField>
+
+<ParamField body="visibility" type="string" default="private">
+  Controls who can access the vault. Accepted values are `private` (only you), `unlisted` (anyone with the link), or `public` (discoverable by all users). Defaults to `private` if omitted.
+</ParamField>
+
+## Request Example
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/vaults \
+  -H 'Authorization: Bearer pb_live_...' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Portrait Prompts",
+    "description": "Curated prompts for portrait photography and art",
+    "visibility": "public"
+  }'
+```
+
+## Response Example
+
+A `201 Created` response is returned on success. The `data` field contains the full vault object.
+
+```json
+{
+  "data": {
+    "id": 7,
+    "name": "Portrait Prompts",
+    "description": "Curated prompts for portrait photography and art",
+    "slug": "portrait-prompts",
+    "visibility": "public",
+    "accessType": null,
+    "isLocked": false,
+    "coverImageUrl": null,
+    "isSystem": false,
+    "promptCount": 0,
+    "createdAt": "2024-05-01T10:00:00Z",
+    "updatedAt": "2024-05-01T10:00:00Z"
+  },
+  "error": null
+}
+```

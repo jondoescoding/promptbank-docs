@@ -1,0 +1,40 @@
+---
+title: "What Is Prompt Bank? AI Prompt Management API"
+sidebarTitle: "Introduction"
+description: "Prompt Bank is a REST API for storing, organizing, and running AI image and video generations. Learn what prompts and vaults are and how they work together."
+---
+
+Prompt Bank is a REST API designed for developers and AI agents who need a reliable place to store, organize, and execute AI-powered media generations. Rather than scattering prompts across notebooks or chat histories, you keep them in structured, shareable vaults and trigger image or video generations programmatically — all through a single, consistent API.
+
+## Key concepts
+
+Prompt Bank is built around three core objects that work together.
+
+**Prompts** are the building blocks of everything you do in Prompt Bank. Each prompt stores a piece of text along with metadata such as a title, a type (`text`, `image`, or `video`), and the model you want to use. Once a prompt is saved, you can reuse it across multiple generation runs without rewriting the same text.
+
+**Vaults** are collections that group related prompts together. Think of a vault as a project folder — you might create one vault for product photography prompts, another for video storyboards, and share individual vaults with teammates or make them public. Prompts can belong to one or more vaults.
+
+**Generations** are the AI media outputs produced when you submit a prompt to a model. A generation record tracks the model used, the source prompt, the output media URL, and the current status of the job (`queued`, `processing`, `completed`, or `failed`). You can poll a generation's status endpoint or retrieve completed results at any time.
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Prompt Management" icon="pen-to-square">
+    Create, update, and delete prompts with full metadata control. Tag prompts by type and target model so they are always ready to run.
+  </Card>
+  <Card title="Vault Organization" icon="folder-open">
+    Group prompts into named vaults, share vaults with collaborators, and keep your prompt library organized as it grows.
+  </Card>
+  <Card title="AI Generations" icon="wand-magic-sparkles">
+    Queue image and video generation jobs against any supported model. Retrieve results and track job status through the generations endpoints.
+  </Card>
+  <Card title="Image Uploads" icon="image">
+    Upload reference images alongside prompts to support image-to-image and inpainting workflows with compatible models.
+  </Card>
+</CardGroup>
+
+<Note>
+  Prompt Bank is designed to be agent-friendly. Every endpoint accepts and returns plain JSON, uses predictable resource identifiers, and follows REST conventions — making it straightforward to call from automated pipelines, LLM tool-use frameworks, and CI workflows without human interaction.
+</Note>
+
+Ready to make your first API call? Head to the [Quick Start](/quickstart) guide to create a prompt and queue a generation in under five minutes.

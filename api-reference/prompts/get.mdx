@@ -1,0 +1,53 @@
+---
+title: "GET /api/v1/prompts/{promptId} — Retrieve a Prompt"
+sidebarTitle: "Get Prompt"
+description: "GET /api/v1/prompts/{promptId} — retrieve a single prompt by its numeric ID. Returns the full prompt object including vaultIds and images."
+---
+
+Fetch the complete details of a single prompt using its unique numeric ID. The response includes all metadata fields — the prompt text, type, platform, status, any associated images, and the full list of vault IDs the prompt belongs to.
+
+<Note>
+  **GET** `https://www.promptbank.club/api/v1/prompts/{promptId}`
+</Note>
+
+## Path Parameters
+
+<ParamField path="promptId" type="integer" required>
+  The unique numeric ID of the prompt you want to retrieve.
+</ParamField>
+
+## Example Request
+
+```bash
+curl https://www.promptbank.club/api/v1/prompts/42 \
+  -H 'Authorization: Bearer pb_live_...'
+```
+
+## Example Response
+
+```json
+{
+  "data": {
+    "id": 42,
+    "title": "Cinematic sunset portrait",
+    "prompt": "A cinematic portrait at golden hour, warm tones, shallow depth of field",
+    "promptType": "image",
+    "platform": "fal.ai",
+    "status": "active",
+    "images": [
+      {
+        "url": "https://cdn.promptbank.club/images/42/output-1.webp",
+        "width": 896,
+        "height": 1120,
+        "createdAt": "2024-06-01T12:10:00Z"
+      }
+    ],
+    "vaultIds": [7],
+    "createdAt": "2024-06-01T12:00:00Z",
+    "updatedAt": "2024-06-01T12:05:00Z"
+  },
+  "error": null
+}
+```
+
+If no prompt with the given `promptId` exists in your account, the API returns **404 Not Found** with a descriptive `error` message.

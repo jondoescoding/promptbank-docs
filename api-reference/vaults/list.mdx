@@ -1,0 +1,79 @@
+---
+title: "GET /api/v1/vaults — List Your Vaults"
+sidebarTitle: "List Vaults"
+description: "GET /api/v1/vaults — retrieve all vaults owned by the authenticated user, including system vaults. Returns an array of vault objects."
+---
+
+Retrieve every vault that belongs to your account, including any system vaults that Prompt Bank creates automatically on your behalf. The endpoint returns the full vault object for each entry, so you can inspect prompt counts, visibility settings, and metadata without making additional requests.
+
+## Endpoint
+
+```
+GET https://www.promptbank.club/api/v1/vaults
+```
+
+No query parameters are required. The response always contains the complete list of your vaults; pagination is not needed because the set is scoped to a single user.
+
+## Request Example
+
+```bash
+curl https://www.promptbank.club/api/v1/vaults \
+  -H 'Authorization: Bearer pb_live_...'
+```
+
+## Response Example
+
+The `data` field contains an array of vault objects ordered by creation date, newest first.
+
+```json
+{
+  "data": [
+    {
+      "id": 7,
+      "name": "Portrait Prompts",
+      "description": "Curated prompts for portrait photography and art",
+      "slug": "portrait-prompts",
+      "visibility": "public",
+      "accessType": null,
+      "isLocked": false,
+      "coverImageUrl": null,
+      "isSystem": false,
+      "promptCount": 12,
+      "createdAt": "2024-05-01T10:00:00Z",
+      "updatedAt": "2024-05-15T08:30:00Z"
+    },
+    {
+      "id": 3,
+      "name": "My Saved Prompts",
+      "description": null,
+      "slug": "my-saved-prompts",
+      "visibility": "private",
+      "accessType": null,
+      "isLocked": false,
+      "coverImageUrl": null,
+      "isSystem": true,
+      "promptCount": 5,
+      "createdAt": "2024-04-10T09:00:00Z",
+      "updatedAt": "2024-04-20T11:45:00Z"
+    }
+  ],
+  "error": null
+}
+```
+
+### Vault Object Fields
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | integer | Unique numeric identifier for the vault. |
+| `name` | string | Display name of the vault (1–50 characters). |
+| `description` | string \| null | Optional description (max 200 characters). |
+| `slug` | string | URL-safe identifier derived from the vault name. |
+| `visibility` | string | One of `private`, `unlisted`, or `public`. |
+| `accessType` | string \| null | Access control type, if applicable. |
+| `isLocked` | boolean | Whether the vault is locked from edits. |
+| `coverImageUrl` | string \| null | URL of the vault's cover image, if set. |
+| `isSystem` | boolean | `true` for vaults automatically created by Prompt Bank. |
+| `promptCount` | integer | Number of prompts currently in the vault. |
+| `createdAt` | string | ISO 8601 timestamp of vault creation. |
+| `updatedAt` | string | ISO 8601 timestamp of the last modification. |

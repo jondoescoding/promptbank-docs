@@ -1,0 +1,163 @@
+---
+title: "Generate AI Images and Videos with Prompt Bank"
+sidebarTitle: "Generate Media"
+description: "Learn how to queue AI image and video generations, use image inputs for img2img, set aspect ratios and batch counts, and retrieve outputs from your vault."
+---
+
+The Prompt Bank generation API lets you queue image and video creation jobs with a single `POST` request. Your job is dispatched to fal.ai, processed asynchronously, and the output is saved directly to the vault you specify. This guide covers every major generation scenario with complete, ready-to-run curl examples.
+
+## Generate an image
+
+Send a `POST /api/v1/generations` request with `generationType: "image"` and a fal.ai `modelId`. The example below uses Recraft v4.1:
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/generations \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "modelId": "fal-ai/recraft/v4.1/text-to-image",
+    "prompt": "A vast cyberpunk city at dusk, towering neon-lit skyscrapers reflected in rain-soaked streets, volumetric fog, cinematic composition, 8k detail",
+    "generationType": "image",
+    "aspectRatio": "16:9",
+    "vaultId": "vlt_01hxyz9876abcd1234efgh"
+  }'
+```
+
+```json
+{
+  "clientJobId": "job_01hxyz5555aaaa6666bbbb",
+  "falRequestId": "fal-req-abc123def456",
+  "statusUrl": "https://www.promptbank.club/api/v1/generations/job_01hxyz5555aaaa6666bbbb/status"
+}
+```
+
+The `202 Accepted` response confirms your job is queued. The generated image will appear in `vlt_01hxyz9876abcd1234efgh` once the fal.ai job completes.
+
+## Generate a video
+
+Use `generationType: "video"` and a video-capable fal.ai endpoint. Everything else works the same as an image generation:
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/generations \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "modelId": "fal-ai/kling-video/v1.6/standard/text-to-video",
+    "prompt": "A slow aerial pan over a rain-soaked cyberpunk city at night, neon signs flickering, steam rising from grates, cinematic",
+    "generationType": "video",
+    "aspectRatio": "16:9",
+    "vaultId": "vlt_01hxyz9876abcd1234efgh"
+  }'
+```
+
+Video jobs typically take longer to process than image jobs. Use the returned `statusUrl` to check progress.
+
+## Image-to-image
+
+To use an existing image as the base for a new generation, provide its URL in the `imageInput` field. For models that accept multiple inputs, use `imageInputs` (up to 7 URLs):
+
+**Single input:**
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/generations \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "modelId": "fal-ai/recraft/v4.1/image-to-image",
+    "prompt": "Transform into a watercolor painting, soft washes of color, visible brushwork, paper texture",
+    "generationType": "image",
+    "imageInput": "https://cdn.promptbank.club/uploads/my-photo.jpg",
+    "aspectRatio": "1:1",
+    "vaultId": "vlt_01hxyz9876abcd1234efgh"
+  }'
+```
+
+**Multiple inputs:**
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/generations \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "modelId": "fal-ai/flux/dev/image-to-image",
+    "prompt": "Merge these styles into a single cohesive landscape",
+    "generationType": "image",
+    "imageInputs": [
+      "https://cdn.promptbank.club/uploads/style-a.jpg",
+      "https://cdn.promptbank.club/uploads/style-b.jpg"
+    ],
+    "aspectRatio": "16:9"
+  }'
+```
+
+To upload your own images for use as inputs, see the [Upload Images guide](/guides/upload-images).
+
+## Batch generation
+
+Set `batchCount` to generate multiple variations from the same prompt in one job. Accepted values are `1` through `4`:
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/generations \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "modelId": "fal-ai/recraft/v4.1/text-to-image",
+    "prompt": "Portrait of a botanist surrounded by exotic plants, natural light, film grain, 35mm",
+    "generationType": "image",
+    "aspectRatio": "4:3",
+    "batchCount": 4,
+    "vaultId": "vlt_01hxyz9876abcd1234efgh"
+  }'
+```
+
+All four images are saved to the specified vault when the job completes.
+
+## Saving to a specific vault
+
+Supply a `vaultId` in your request to direct the output to a particular vault. If you omit `vaultId`, the output is saved to your General vault (the system vault created automatically for your account):
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/generations \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "modelId": "fal-ai/recraft/v4.1/text-to-image",
+    "prompt": "Minimalist product shot, white background, soft shadows",
+    "generationType": "image",
+    "vaultId": "vlt_01hxyz1111kkkk0000llll"
+  }'
+```
+
+You can retrieve the output later by listing prompts in that vault: `GET /api/v1/prompts?vaultId=vlt_01hxyz1111kkkk0000llll`.
+
+## Tracking the generation
+
+The `statusUrl` in the response gives you a live view of your job's state:
+
+```bash
+curl "https://www.promptbank.club/api/v1/generations/job_01hxyz5555aaaa6666bbbb/status" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json
+{
+  "clientJobId": "job_01hxyz5555aaaa6666bbbb",
+  "status": "completed",
+  "falRequestId": "fal-req-abc123def456",
+  "outputUrls": [
+    "https://cdn.promptbank.club/outputs/gen-01hxyz.webp",
+    "https://cdn.promptbank.club/outputs/gen-01hxyz-2.webp"
+  ]
+}
+```
+
+Possible `status` values are `queued`, `running`, `completed`, and `failed`. Poll the `statusUrl` until the status reaches a terminal state, or wait for the assets to appear in your vault.
+
+<Tip>
+The `clientJobId` is your stable handle for a generation job. Store it in your own database alongside the user action or workflow step that triggered the generation. You can use it to look up the job status, correlate logs, and avoid submitting duplicate requests.
+</Tip>
+
+## Next steps
+
+- Need to upload reference images before generating? See the [Upload Images guide](/guides/upload-images).
+- Learn how outputs are organized in [Vaults](/concepts/vaults).

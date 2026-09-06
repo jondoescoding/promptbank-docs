@@ -1,20 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "name": "Prompt Bank",
+  "projectType": "api-service",
+  "projectName": "Prompt Bank",
+  "projectDescription": "Prompt Bank is an agent-friendly API for creating, organizing, and generating AI media from prompts stored in shareable vaults.",
   "theme": "luma",
-  "colors": {
-    "primary": "#ef7025",
-    "light": "#eec9bc",
-    "dark": "#4fa1ab"
-  },
-  "favicon": "/favicon.svg",
-  "navbar": {
-    "primary": {
-      "type": "button",
-      "label": "Go to Prompt Bank",
-      "href": "https://www.promptbank.club"
-    }
-  },
+  "primaryColor": "#ef7025",
+  "lightColor": "#eec9bc",
+  "darkColor": "#4fa1ab",
   "navigation": {
     "tabs": [
       {
@@ -109,5 +100,41 @@
         ]
       }
     ]
-  }
+  },
+  "keyFeatures": [
+    "Create and manage reusable AI prompts (text, image, video types)",
+    "Organize prompts into shareable vaults with configurable visibility (private, unlisted, public)",
+    "Queue AI image and video generations via fal.ai model endpoints",
+    "Fork vaults to copy and remix community prompt collections",
+    "Pin, move, and organize prompts within vaults",
+    "Upload reference images for use in prompt records and generation requests",
+    "Cursor-based pagination for scalable prompt and vault listing",
+    "Bearer token API key authentication with scoped permissions"
+  ],
+  "publicApiSurface": [
+    "GET /api/v1/prompts",
+    "POST /api/v1/prompts",
+    "GET /api/v1/prompts/{promptId}",
+    "PATCH /api/v1/prompts/{promptId}",
+    "DELETE /api/v1/prompts/{promptId}",
+    "POST /api/v1/prompts/{promptId}/save",
+    "GET /api/v1/vaults",
+    "POST /api/v1/vaults",
+    "GET /api/v1/vaults/{vaultId}",
+    "PATCH /api/v1/vaults/{vaultId}",
+    "DELETE /api/v1/vaults/{vaultId}",
+    "POST /api/v1/vaults/{vaultId}/fork",
+    "GET /api/v1/vaults/{vaultId}/prompts",
+    "POST /api/v1/vaults/{vaultId}/prompts",
+    "DELETE /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}",
+    "POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move",
+    "POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/pin",
+    "DELETE /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/pin",
+    "POST /api/v1/generations",
+    "POST /api/v1/uploads/images",
+    "GET /api/v1/api-keys",
+    "POST /api/v1/api-keys",
+    "GET /api/v1/api-keys/{keyId}",
+    "DELETE /api/v1/api-keys/{keyId}"
+  ]
 }

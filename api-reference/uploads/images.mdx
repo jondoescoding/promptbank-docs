@@ -1,0 +1,113 @@
+---
+title: "POST /api/v1/uploads/images — Upload a Prompt Image"
+sidebarTitle: "Upload Image"
+description: "POST /api/v1/uploads/images — get a signed upload URL for PNG, JPEG, WebP, or GIF files up to 10 MB. Upload bytes directly to storage, then use the returned URL."
+---
+
+Uploading an image to Prompt Bank is a two-step process. First, you call this endpoint to request a short-lived signed upload URL and receive back a permanent asset URL. Second, you PUT the raw file bytes directly to that signed URL. Once the upload completes, the permanent URL is ready to use in any API call that accepts an image — such as the `imageUrl` field on a prompt or the `imageInput` field on a generation. This design keeps large binary data out of Prompt Bank's servers and delivers your file straight to storage with minimal latency.
+
+## Endpoint
+
+```
+POST https://www.promptbank.club/api/v1/uploads/images
+```
+
+**Required scope:** `prompts:write`
+
+---
+
+## Step 1 — Request a signed upload URL
+
+Call this endpoint with the content type and byte size of the file you intend to upload. Prompt Bank validates the parameters, provisions a storage slot, and returns a signed URL that authorises a single upload of exactly that file.
+
+### Request Body
+
+<ParamField body="contentType" type="string" required>
+  The MIME type of the image you are uploading. Accepted values:
+
+  - `image/png`
+  - `image/jpeg`
+  - `image/webp`
+  - `image/gif`
+</ParamField>
+
+<ParamField body="size" type="integer" required>
+  The exact byte size of the file. Must be between `1` and `10485760` (10 MB). The signed URL is scoped to this exact size; uploading a file of a different size will be rejected by storage.
+</ParamField>
+
+### Example request
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/uploads/images \
+  -H "Authorization: Bearer pb_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contentType": "image/png",
+    "size": 204800
+  }'
+```
+
+### Response — 201 Created
+
+```json
+{
+  "uploadUrl": "https://storage.promptbank.club/uploads/signed/abc123...?token=xyz&expires=1718000000",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "url": "https://storage.promptbank.club/assets/images/f47ac10b-58cc-4372-a567-0e02b2c3d479.png",
+  "path": "assets/images/f47ac10b-58cc-4372-a567-0e02b2c3d479.png",
+  "contentType": "image/png",
+  "size": 204800,
+  "expiresIn": 7200
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `uploadUrl` | string | The signed URL to `PUT` your file bytes to. Valid for `expiresIn` seconds. |
+| `token` | string | Bearer token to include in the `PUT` request `Authorization` header. |
+| `url` | string | **The permanent asset URL.** Use this in all subsequent API calls. |
+| `path` | string | The storage path of the asset. |
+| `contentType` | string | The content type you specified. |
+| `size` | integer | The file size you specified, in bytes. |
+| `expiresIn` | integer | Seconds until `uploadUrl` expires. Always `7200` (2 hours). |
+
+---
+
+## Step 2 — Upload the file bytes
+
+`PUT` your raw file bytes to the `uploadUrl` from Step 1. Include the `token` as a Bearer token in the `Authorization` header and set `Content-Type` to match the `contentType` you declared in Step 1.
+
+```bash
+curl -X PUT "<uploadUrl>" \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: image/png" \
+  --data-binary @image.png
+```
+
+A successful upload returns an HTTP `200` with an empty body. No additional call to Prompt Bank is required — the asset is live at the permanent `url` as soon as storage confirms the upload.
+
+---
+
+## Step 3 — Use the permanent URL
+
+Use the `url` field (not `uploadUrl`) anywhere the Prompt Bank API accepts an image URI. For example:
+
+```bash
+# Use the uploaded image as input for a generation
+curl -X POST https://www.promptbank.club/api/v1/generations \
+  -H "Authorization: Bearer pb_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "modelId": "fal-ai/recraft/v4.1/image-to-image",
+    "prompt": "Turn this into a watercolour painting",
+    "imageInput": "https://storage.promptbank.club/assets/images/f47ac10b-58cc-4372-a567-0e02b2c3d479.png"
+  }'
+```
+
+<Warning>
+  The `uploadUrl` expires **2 hours** (7,200 seconds) after it is issued. If your upload does not complete within that window, request a new signed URL by calling this endpoint again. The permanent `url` does not expire.
+</Warning>
+
+<Note>
+  Always use the `url` field — the permanent asset URL — in subsequent API calls. The `uploadUrl` is a one-time write credential for storage and will not serve your image to Prompt Bank or fal.ai. Passing `uploadUrl` as an `imageInput` will result in an authentication error from storage.
+</Note>

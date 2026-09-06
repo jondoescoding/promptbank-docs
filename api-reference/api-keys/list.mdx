@@ -1,0 +1,82 @@
+---
+title: "GET /api/v1/api-keys — List Your API Keys"
+sidebarTitle: "List Keys"
+description: "GET /api/v1/api-keys — list all API keys for your account. Browser session required. Returns metadata only — never the raw key values."
+---
+
+This endpoint returns the metadata for every API key associated with your account. Because it exposes key names, scopes, and usage timestamps, it requires an active browser session rather than an API key — this prevents a compromised key from being used to enumerate or inspect other keys on the account. Raw key values are never returned; you will only see prefixes such as `pb_live_abc123` to help you identify which key is which.
+
+## Endpoint
+
+```
+GET https://www.promptbank.club/api/v1/api-keys
+```
+
+**Authentication:** SessionAuth — browser session cookie (not an API key)
+
+## Response
+
+The response is an array of `ApiKey` objects.
+
+<ResponseField name="id" type="string (UUID)">
+  The unique identifier for the API key. Use this value as the `keyId` path parameter when calling the [Reveal Key](/api-reference/api-keys/reveal) or [Revoke Key](/api-reference/api-keys/revoke) endpoints.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  The human-readable label you assigned when the key was created.
+</ResponseField>
+
+<ResponseField name="keyPrefix" type="string">
+  The first few characters of the raw key, e.g. `pb_live_abc123`. Use this to identify a key in logs or dashboards without exposing the full secret.
+</ResponseField>
+
+<ResponseField name="scopes" type="array of strings">
+  The permission scopes granted to this key, e.g. `["prompts:read", "prompts:write"]`.
+</ResponseField>
+
+<ResponseField name="lastUsedAt" type="string (ISO 8601) | null">
+  The timestamp of the most recent authenticated request made with this key. `null` if the key has never been used.
+</ResponseField>
+
+<ResponseField name="revokedAt" type="string (ISO 8601) | null">
+  The timestamp at which the key was revoked, or `null` if it is still active.
+</ResponseField>
+
+<ResponseField name="expiresAt" type="string (ISO 8601) | null">
+  The timestamp at which the key will automatically expire, or `null` if it does not expire.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string (ISO 8601)">
+  The timestamp at which the key was created.
+</ResponseField>
+
+## Example Response
+
+```json
+[
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "name": "Production API Key",
+    "keyPrefix": "pb_live_f47a",
+    "scopes": ["prompts:read", "prompts:write"],
+    "lastUsedAt": "2024-06-10T14:23:01Z",
+    "revokedAt": null,
+    "expiresAt": null,
+    "createdAt": "2024-05-01T09:00:00Z"
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Read-only CI Key",
+    "keyPrefix": "pb_live_a1b2",
+    "scopes": ["prompts:read"],
+    "lastUsedAt": "2024-06-09T08:45:12Z",
+    "revokedAt": "2024-06-10T16:00:00Z",
+    "expiresAt": null,
+    "createdAt": "2024-04-15T12:30:00Z"
+  }
+]
+```
+
+<Note>
+  This endpoint is **browser-session only**. It cannot be called with an API key in the `Authorization` header. If you send a Bearer token, the request will be rejected with `401 Unauthorized`. Use this endpoint from your account dashboard or from a server-side context where a valid session cookie is present.
+</Note>

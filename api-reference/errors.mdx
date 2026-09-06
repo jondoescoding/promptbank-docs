@@ -1,0 +1,108 @@
+---
+title: "Prompt Bank API Error Codes and Troubleshooting"
+sidebarTitle: "Errors"
+description: "Reference for Prompt Bank API error responses. Covers HTTP status codes 400, 401, and 404, the error response format, and how to handle each error type."
+---
+
+When the Prompt Bank API cannot fulfill a request it returns an error response. Every error follows the same `{ data, error }` envelope used by successful responses: `data` is `null`, and `error` contains a human-readable description of what went wrong. An optional `details` object provides field-level information when available.
+
+## Error response format
+
+```json
+{
+  "data": null,
+  "error": "Human-readable message describing the problem.",
+  "details": {}
+}
+```
+
+`details` is always present on error responses. For validation errors (`400`) it may contain a map of field names to specific issues. For other error types it is typically an empty object `{}`.
+
+## Error codes
+
+<AccordionGroup>
+  <Accordion title="400 Bad Request">
+    **Meaning:** The request was rejected because the body or query parameters are invalid or incomplete.
+
+    **Common causes:**
+    - A required field is missing from the request body (e.g. omitting `name` when creating a prompt).
+    - A field value is the wrong type (e.g. sending a string where an integer is expected).
+    - A query parameter is outside the accepted range (e.g. `limit=0` or `limit=500`).
+
+    **How to fix:**
+    1. Read the `error` message — it identifies the problem at a high level.
+    2. Check `details` for a field-by-field breakdown of what failed validation.
+    3. Compare your request payload against the endpoint's parameter table in this reference.
+
+    **Example:**
+    ```json
+    {
+      "data": null,
+      "error": "Validation failed.",
+      "details": {
+        "name": "This field is required."
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="401 Unauthorized">
+    **Meaning:** The request did not include a valid API key, or the key lacks permission to perform the requested operation.
+
+    **Common causes:**
+    - The `Authorization` header is missing entirely.
+    - The header value is malformed — for example, missing the `Bearer ` prefix or including extra whitespace.
+    - The API key has been revoked in the dashboard.
+    - The API key does not have the `prompts:write` scope required by a write endpoint.
+
+    **How to fix:**
+    1. Ensure the header is present on every request: `Authorization: Bearer pb_live_...`
+    2. Confirm the key is active by checking your dashboard.
+    3. If the key is active but the error persists on a write endpoint, verify the key has the `prompts:write` scope.
+    4. If the key was lost or compromised, revoke it and create a new one.
+
+    **Example:**
+    ```json
+    {
+      "data": null,
+      "error": "Unauthorized. Missing or invalid API key.",
+      "details": {}
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="404 Not Found">
+    **Meaning:** The resource identified in the request path or parameters does not exist, or is not accessible with your API key.
+
+    **Common causes:**
+    - The prompt, vault, or API key ID in the URL path is incorrect or has a typo.
+    - The resource was deleted before the request was made.
+    - The resource belongs to a different account than the one associated with your API key.
+
+    **How to fix:**
+    1. Double-check the resource ID in the URL path.
+    2. Confirm the resource still exists by listing the collection (e.g. `GET /api/v1/prompts`).
+    3. Ensure you are using the API key for the account that owns the resource.
+
+    **Example:**
+    ```json
+    {
+      "data": null,
+      "error": "Prompt not found.",
+      "details": {}
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Quick reference
+
+| Status code | Name | Typical cause |
+|-------------|------|---------------|
+| `400` | Bad Request | Invalid or missing request body / query parameters |
+| `401` | Unauthorized | Missing, malformed, revoked, or insufficient-scope API key |
+| `404` | Not Found | Prompt, vault, or API key does not exist |
+
+<Tip>
+  When contacting Prompt Bank support about an unexpected error, include the full `error` message and `details` object from the response. They help the support team identify the root cause faster.
+</Tip>

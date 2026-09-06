@@ -1,0 +1,72 @@
+---
+title: "PATCH /api/v1/vaults/{vaultId} — Update a Vault"
+sidebarTitle: "Update Vault"
+description: "PATCH /api/v1/vaults/{vaultId} — update a vault's name, description, or visibility. Send only the fields you want to change."
+---
+
+Update one or more properties of an existing vault you own. This endpoint uses partial update semantics — you only need to include the fields you want to change, and all other properties remain untouched. For example, you can rename a vault without affecting its visibility or description, or flip a private vault to public in a single targeted request.
+
+## Endpoint
+
+```
+PATCH https://www.promptbank.club/api/v1/vaults/{vaultId}
+```
+
+## Path Parameters
+
+<ParamField path="vaultId" type="integer" required>
+  The numeric ID of the vault to update.
+</ParamField>
+
+## Body Parameters
+
+All body parameters are optional. Include only the fields you want to update.
+
+<ParamField body="name" type="string">
+  A new display name for the vault. Must be between 1 and 50 characters.
+</ParamField>
+
+<ParamField body="description" type="string | null">
+  A new description for the vault. Maximum 200 characters. Pass `null` to clear an existing description.
+</ParamField>
+
+<ParamField body="visibility" type="string">
+  The new visibility setting. Accepted values are `private`, `unlisted`, or `public`.
+</ParamField>
+
+## Request Example
+
+This example updates only the `visibility` of vault `7`, leaving its name and description unchanged.
+
+```bash
+curl -X PATCH https://www.promptbank.club/api/v1/vaults/7 \
+  -H 'Authorization: Bearer pb_live_...' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "visibility": "public"
+  }'
+```
+
+## Response Example
+
+A `200 OK` response is returned on success. The `data` field contains the complete updated vault object.
+
+```json
+{
+  "data": {
+    "id": 7,
+    "name": "Portrait Prompts",
+    "description": "Curated prompts for portrait photography and art",
+    "slug": "portrait-prompts",
+    "visibility": "public",
+    "accessType": null,
+    "isLocked": false,
+    "coverImageUrl": null,
+    "isSystem": false,
+    "promptCount": 12,
+    "createdAt": "2024-05-01T10:00:00Z",
+    "updatedAt": "2024-05-16T14:22:00Z"
+  },
+  "error": null
+}
+```

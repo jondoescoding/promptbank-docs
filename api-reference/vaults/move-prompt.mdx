@@ -1,0 +1,56 @@
+---
+title: "POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move — Move Prompt"
+sidebarTitle: "Move Prompt"
+description: "POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move — move a prompt from one vault to another vault you own. Requires targetVaultId in the request body."
+---
+
+Move a prompt from one of your vaults to another in a single atomic operation. Supply the source vault and the vault–prompt membership ID in the path, and specify the destination vault in the request body. After a successful move, the prompt is no longer a member of the source vault and immediately appears in the target vault. Both vaults must belong to your account.
+
+## Endpoint
+
+```
+POST https://www.promptbank.club/api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move
+```
+
+## Path Parameters
+
+<ParamField path="vaultId" type="integer" required>
+  The numeric ID of the source vault — the vault the prompt is currently in.
+</ParamField>
+
+<ParamField path="vaultPromptId" type="integer" required>
+  The numeric ID of the vault–prompt membership record. This is the `vaultPromptId` returned when listing prompts in a vault.
+</ParamField>
+
+## Body Parameters
+
+<ParamField body="targetVaultId" type="integer" required>
+  The numeric ID of the destination vault. Must be at least `1` and must refer to a vault you own.
+</ParamField>
+
+## Request Example
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/vaults/7/prompts/55/move \
+  -H 'Authorization: Bearer pb_live_...' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "targetVaultId": 12
+  }'
+```
+
+## Response Example
+
+A `200 OK` response is returned on success. The `data` field confirms the move and provides the new `vaultPromptId` assigned in the target vault.
+
+```json
+{
+  "data": {
+    "promptId": 101,
+    "sourceVaultId": 7,
+    "targetVaultId": 12,
+    "vaultPromptId": 89
+  },
+  "error": null
+}
+```

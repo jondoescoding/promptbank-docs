@@ -1,0 +1,42 @@
+---
+title: "DELETE /api/v1/prompts/{promptId} — Delete a Prompt"
+sidebarTitle: "Delete Prompt"
+description: "DELETE /api/v1/prompts/{promptId} — permanently delete a prompt by ID. This also removes it from all vaults it belongs to."
+---
+
+Permanently delete a prompt from your account by its numeric ID. When a prompt is deleted it is also removed from every vault it currently belongs to — there is no way to recover it after deletion.
+
+<Warning>
+  Deletion is **irreversible**. The prompt, its text, and all associated metadata are permanently removed. Any generated images linked to the prompt will also be unlinked. If you only want to remove a prompt from a specific vault while keeping the prompt itself, use the vault membership endpoint instead.
+</Warning>
+
+<Note>
+  **DELETE** `https://www.promptbank.club/api/v1/prompts/{promptId}`
+</Note>
+
+## Path Parameters
+
+<ParamField path="promptId" type="integer" required>
+  The unique numeric ID of the prompt you want to delete.
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X DELETE https://www.promptbank.club/api/v1/prompts/42 \
+  -H 'Authorization: Bearer pb_live_...'
+```
+
+## Example Response
+
+```json
+{
+  "data": {
+    "id": 42,
+    "deleted": true
+  },
+  "error": null
+}
+```
+
+A successful deletion returns HTTP **200 OK**. Subsequent requests to `GET /api/v1/prompts/42` will return **404 Not Found**.

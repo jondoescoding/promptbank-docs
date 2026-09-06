@@ -1,0 +1,74 @@
+---
+title: "Vaults: Organize and Share Your Prompt Collections"
+sidebarTitle: "Vaults"
+description: "Vaults are collections of prompts in Prompt Bank. Learn about vault visibility settings, forking, pinning prompts, and how to organize your prompt library."
+---
+
+A vault is a named collection that groups related prompts together. Think of it as a folder or project workspace: you create a vault for a specific theme, client, or workflow, then fill it with the prompts that belong there. Vaults can be kept private, shared via a secret link, or published openly so the community can discover and fork them.
+
+<Note>
+Every Prompt Bank account comes with a **General vault** (`isSystem: true`) that is created automatically. It acts as the default destination for any prompt or generation output that doesn't specify a `vaultId`. You cannot delete the General vault.
+</Note>
+
+## Visibility levels
+
+Each vault has a `visibility` setting that controls who can see and access it.
+
+| Level | Who can access |
+|-------|---------------|
+| `private` | Only you. The vault and its prompts are completely hidden from other users. |
+| `unlisted` | Anyone with the direct link or vault `slug` can view and fork it, but it does not appear in public listings or search. |
+| `public` | Fully discoverable. The vault appears in public listings and can be viewed and forked by any user. |
+
+You can change a vault's visibility at any time by sending a `PATCH /api/v1/vaults/{vaultId}` request with the new `visibility` value.
+
+## Vault operations
+
+| Operation | Endpoint | Notes |
+|-----------|----------|-------|
+| Create | `POST /api/v1/vaults` | Supply `name` (max 50 chars), optional `description` (max 200 chars), and `visibility`. |
+| Read | `GET /api/v1/vaults/{vaultId}` | Returns the full vault object including `promptCount`. |
+| Update | `PATCH /api/v1/vaults/{vaultId}` | Partial update — send only the fields you want to change. |
+| Fork | `POST /api/v1/vaults/{vaultId}/fork` | Copies all prompts into a new vault owned by you. |
+| Delete | `DELETE /api/v1/vaults/{vaultId}` | Permanently deletes the vault and removes its prompt associations. System vaults cannot be deleted. |
+
+## Managing prompts in a vault
+
+Once a vault exists, you have full control over which prompts live inside it and how they are arranged.
+
+- **Add prompts** — `POST /api/v1/vaults/{vaultId}/prompts` with a `promptIds` array (up to 50 IDs per request).
+- **Remove prompts** — `DELETE /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}` removes the association without deleting the underlying prompt.
+- **Pin a prompt** — `POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/pin` marks a prompt as pinned so it surfaces at the top of vault listings.
+- **Move a prompt** — `POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move` with a `targetVaultId` transfers the prompt to a different vault.
+
+## Forking a vault
+
+Forking lets you copy an existing vault — and all of its prompts — into your own account. You can fork any vault whose visibility is `public` or `unlisted`.
+
+Send a `POST` request to:
+
+```
+POST /api/v1/vaults/{vaultId}/fork
+```
+
+The API creates a new vault in your account with the same name, description, and prompts as the source. The forked vault starts as `private` so you can edit it freely before sharing. The original vault is not modified.
+
+## Example vault object
+
+```json
+{
+  "id": "vlt_01hxyz9876abcd1234efgh",
+  "name": "Cyberpunk Scenes",
+  "slug": "cyberpunk-scenes",
+  "description": "A curated set of prompts for neon-noir cityscape imagery.",
+  "visibility": "public",
+  "isSystem": false,
+  "promptCount": 24,
+  "createdAt": "2024-10-01T08:00:00Z",
+  "updatedAt": "2024-11-14T17:45:00Z"
+}
+```
+
+## Next steps
+
+See the [Organize Vaults guide](/guides/organize-vaults) for step-by-step instructions on creating vaults, setting visibility, pinning prompts, and forking public collections.

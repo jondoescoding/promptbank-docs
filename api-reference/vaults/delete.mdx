@@ -1,0 +1,48 @@
+---
+title: "DELETE /api/v1/vaults/{vaultId} — Delete a Vault"
+sidebarTitle: "Delete Vault"
+description: "DELETE /api/v1/vaults/{vaultId} — permanently delete a vault by ID. Prompts inside the vault are not deleted, only removed from the vault."
+---
+
+Permanently delete a vault you own by its numeric ID. Deleting a vault removes the vault and all of its organizational structure, but it does not delete the prompt records themselves — they remain in your account and can be added to other vaults at any time.
+
+<Warning>
+  Vault deletion is permanent and cannot be undone. Once a vault is deleted, its name, description, slug, and membership list are gone forever. Make sure you intend to remove the vault before calling this endpoint.
+</Warning>
+
+<Note>
+  Prompts that were inside the deleted vault are **not** removed from your account. They continue to exist and can be added to a different vault, or accessed directly via the Prompts API.
+</Note>
+
+## Endpoint
+
+```
+DELETE https://www.promptbank.club/api/v1/vaults/{vaultId}
+```
+
+## Path Parameters
+
+<ParamField path="vaultId" type="integer" required>
+  The numeric ID of the vault to delete.
+</ParamField>
+
+## Request Example
+
+```bash
+curl -X DELETE https://www.promptbank.club/api/v1/vaults/7 \
+  -H 'Authorization: Bearer pb_live_...'
+```
+
+## Response Example
+
+A `200 OK` response is returned on success.
+
+```json
+{
+  "data": {
+    "id": 7,
+    "deleted": true
+  },
+  "error": null
+}
+```

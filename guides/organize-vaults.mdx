@@ -1,0 +1,198 @@
+---
+title: "Organize Prompts into Vaults in Prompt Bank"
+sidebarTitle: "Organize Vaults"
+description: "Learn how to create vaults, set visibility, add and move prompts, fork public vaults, and pin your favorite prompts using the Prompt Bank API."
+---
+
+Vaults give structure to your prompt library. Whether you're building a personal collection, collaborating with a team, or publishing prompts for the community, vaults let you group related prompts, control access, and share your work. This guide walks you through the full vault workflow from creation to sharing.
+
+## Typical vault workflow
+
+<Steps>
+
+<Step title="Create a vault">
+
+Create a new vault by sending a `POST` request to `/api/v1/vaults`. Supply a `name`, an optional `description`, and a `visibility` setting:
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/vaults \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Cyberpunk Scenes",
+    "description": "A curated set of prompts for neon-noir cityscape imagery.",
+    "visibility": "private"
+  }'
+```
+
+```json
+{
+  "id": "vlt_01hxyz9876abcd1234efgh",
+  "name": "Cyberpunk Scenes",
+  "slug": "cyberpunk-scenes",
+  "description": "A curated set of prompts for neon-noir cityscape imagery.",
+  "visibility": "private",
+  "isSystem": false,
+  "promptCount": 0,
+  "createdAt": "2024-11-15T08:00:00Z",
+  "updatedAt": "2024-11-15T08:00:00Z"
+}
+```
+
+</Step>
+
+<Step title="Add prompts to the vault">
+
+Once you have prompt IDs, add up to 50 at a time with `POST /api/v1/vaults/{vaultId}/prompts`:
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh/prompts \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "promptIds": [
+      "pmt_01hxyz9999cccc8888dddd",
+      "pmt_01hxyz7777eeee6666ffff",
+      "pmt_01hxyz5555gggg4444hhhh"
+    ]
+  }'
+```
+
+The response returns the updated vault with the new `promptCount`.
+
+</Step>
+
+<Step title="Set visibility to share the vault">
+
+When your vault is ready to share, update its `visibility`:
+
+```bash
+curl -X PATCH https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "visibility": "public"
+  }'
+```
+
+Other users can now discover and fork your vault.
+
+</Step>
+
+</Steps>
+
+## Vault visibility
+
+You can create vaults at any visibility level and change them at any time.
+
+**Private vault** — only you can see it:
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/vaults \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Work in Progress",
+    "visibility": "private"
+  }'
+```
+
+**Unlisted vault** — accessible via direct link, not listed publicly:
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/vaults \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Client Preview",
+    "visibility": "unlisted"
+  }'
+```
+
+**Public vault** — discoverable by anyone:
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/vaults \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Open Prompt Pack",
+    "visibility": "public"
+  }'
+```
+
+## Adding prompts to a vault
+
+Use `POST /api/v1/vaults/{vaultId}/prompts` to associate existing prompts with a vault. You can add up to 50 prompt IDs in a single request:
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh/prompts \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "promptIds": [
+      "pmt_01hxyz9999cccc8888dddd",
+      "pmt_01hxyz7777eeee6666ffff"
+    ]
+  }'
+```
+
+The `promptIds` values refer to existing prompts in your account. Creating a prompt with a `vaultId` body parameter also adds it directly.
+
+## Pinning prompts
+
+Pinning a prompt marks it as featured within the vault. Pinned prompts are surfaced at the top of vault listings. Use the `vaultPromptId` — the ID of the vault-prompt association, returned when you add a prompt — not the prompt's own ID:
+
+```bash
+curl -X POST \
+  https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh/prompts/vp_01hxyz3333iiii2222jjjj/pin \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+A `200 OK` response confirms the prompt is now pinned.
+
+## Moving prompts between vaults
+
+To transfer a prompt from one vault to another, use the `move` endpoint with the `targetVaultId`:
+
+```bash
+curl -X POST \
+  https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh/prompts/vp_01hxyz3333iiii2222jjjj/move \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "targetVaultId": "vlt_01hxyz1111kkkk0000llll"
+  }'
+```
+
+The prompt is removed from the source vault and added to the target vault. The underlying prompt object is unchanged.
+
+## Forking a vault
+
+Forking copies all prompts from a `public` or `unlisted` vault into a new vault owned by your account. The forked vault starts as `private`.
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/vaults/vlt_01hxyz9876abcd1234efgh/fork \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json
+{
+  "id": "vlt_01hxyz2222mmmm3333nnnn",
+  "name": "Cyberpunk Scenes (fork)",
+  "slug": "cyberpunk-scenes-fork",
+  "description": "A curated set of prompts for neon-noir cityscape imagery.",
+  "visibility": "private",
+  "isSystem": false,
+  "promptCount": 24,
+  "createdAt": "2024-11-15T14:00:00Z",
+  "updatedAt": "2024-11-15T14:00:00Z"
+}
+```
+
+You can fork any vault whose visibility is `public` or `unlisted`. The original vault and its owner are not affected.
+
+## Next steps
+
+- Learn how to run image and video generations and save outputs to a vault in the [Generate Media guide](/guides/generate-media).
+- Need to create prompts first? See [Manage Prompts](/guides/manage-prompts).

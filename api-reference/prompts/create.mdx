@@ -1,0 +1,88 @@
+---
+title: "POST /api/v1/prompts — Create a New Prompt"
+sidebarTitle: "Create Prompt"
+description: "POST /api/v1/prompts — create a text, image, or video prompt. Requires title, prompt text, and for image/video types a valid fal.ai modelId."
+---
+
+Create a new prompt in your account. Every prompt requires a title and the prompt text itself. For `image` and `video` prompt types, you must also supply a `modelId` in the `fal-ai/` namespace so the platform knows which model to use when generating output.
+
+<Note>
+  **POST** `https://www.promptbank.club/api/v1/prompts`
+</Note>
+
+## Request Body
+
+<ParamField body="title" type="string" required>
+  A human-readable name for the prompt. Must be between **1** and **120** characters.
+</ParamField>
+
+<ParamField body="prompt" type="string" required>
+  The full prompt text. Must be between **1** and **15,000** characters.
+</ParamField>
+
+<ParamField body="promptType" type="string" default="text">
+  The modality of the prompt. Accepted values: `image`, `text`, `video`.
+</ParamField>
+
+<ParamField body="platform" type="string">
+  A label for the platform or tool this prompt targets (e.g. `"fal.ai"`, `"Midjourney"`). Maximum **80** characters.
+</ParamField>
+
+<ParamField body="modelId" type="string">
+  The fal.ai model identifier to use for generation. Must match the pattern `^fal-ai/.+` — for example `fal-ai/recraft/v4.1/text-to-image`. **Required when `promptType` is `image` or `video`.**
+</ParamField>
+
+<ParamField body="aspectRatio" type="string">
+  The desired output aspect ratio, e.g. `"4:5"` or `"16:9"`. Maximum **20** characters.
+</ParamField>
+
+<ParamField body="vaultId" type="integer">
+  Automatically add the newly created prompt to the vault with this ID.
+</ParamField>
+
+<ParamField body="imageUrl" type="string">
+  A URI pointing to an image to associate with the prompt (must be a valid URL).
+</ParamField>
+
+<ParamField body="referenceMediaUrls" type="array">
+  An array of up to **10** URIs pointing to reference images or videos that provide visual context for generation.
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/prompts \
+  -H 'Authorization: Bearer pb_live_...' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "Cinematic sunset portrait",
+    "prompt": "A cinematic portrait at golden hour, warm tones, shallow depth of field",
+    "promptType": "image",
+    "modelId": "fal-ai/recraft/v4.1/text-to-image",
+    "platform": "fal.ai",
+    "aspectRatio": "4:5",
+    "vaultId": 7
+  }'
+```
+
+## Example Response
+
+```json
+{
+  "data": {
+    "id": 42,
+    "title": "Cinematic sunset portrait",
+    "prompt": "A cinematic portrait at golden hour, warm tones, shallow depth of field",
+    "promptType": "image",
+    "platform": "fal.ai",
+    "status": "active",
+    "images": [],
+    "vaultIds": [7],
+    "createdAt": "2024-06-01T12:00:00Z",
+    "updatedAt": "2024-06-01T12:00:00Z"
+  },
+  "error": null
+}
+```
+
+A successful creation returns HTTP **201 Created** along with the full prompt object. Save the `id` field — you will need it to retrieve, update, or delete this prompt later.

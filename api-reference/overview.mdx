@@ -1,0 +1,119 @@
+---
+title: "Prompt Bank REST API Overview and Base URL"
+sidebarTitle: "Overview"
+description: "Overview of the Prompt Bank REST API. Covers base URL, versioning, request format, the { data, error } response envelope, and pagination."
+---
+
+The Prompt Bank REST API gives you programmatic access to your prompts, vaults, and API keys. You can create, retrieve, update, and delete resources from any HTTP client. All requests go to a single base URL, all request bodies use JSON, and all responses follow a consistent `{ data, error }` envelope.
+
+## Base URL
+
+Every request targets:
+
+```
+https://www.promptbank.club/api/v1
+```
+
+Use this as the root for all paths shown in this documentation. For example, the endpoint `GET /prompts` resolves to `https://www.promptbank.club/api/v1/prompts`.
+
+## Versioning
+
+The API is versioned with a `v1` prefix in every path. When breaking changes are introduced, a new version prefix (e.g. `v2`) will be released. The `v1` prefix will remain available during any transition period so existing integrations keep working.
+
+## Request Format
+
+Send request bodies as JSON. Set the `Content-Type` header to `application/json` on all requests that include a body (POST, PUT, PATCH).
+
+```bash
+curl -X POST https://www.promptbank.club/api/v1/prompts \
+  -H "Authorization: Bearer pb_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{"name": "My Prompt", "content": "You are a helpful assistant."}'
+```
+
+## Response Envelope
+
+Every response — success or error — returns a JSON object with two top-level keys:
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `data` | object \| array \| null | The requested resource(s). `null` on error. |
+| `error` | string \| null | A human-readable error message. `null` on success. |
+
+List endpoints include an additional `pagination` object alongside `data` and `error`.
+
+### Success response
+
+```json
+{
+  "data": {
+    "id": "prompt_01j9k2m3n4p5q6r7s8t9u0v1",
+    "name": "My Prompt",
+    "content": "You are a helpful assistant.",
+    "createdAt": "2024-11-01T12:00:00Z"
+  },
+  "error": null
+}
+```
+
+### Error response
+
+```json
+{
+  "data": null,
+  "error": "Prompt not found.",
+  "details": {}
+}
+```
+
+When `error` is non-null, `data` is always `null`. The optional `details` object may contain field-level validation information for `400 Bad Request` responses.
+
+## Pagination
+
+List endpoints use **cursor-based pagination**. The response includes a `pagination` object alongside the result array:
+
+```json
+{
+  "data": [ /* ... */ ],
+  "pagination": {
+    "nextCursor": "cursor_01j9k2m3n4p5q6r7"
+  },
+  "error": null
+}
+```
+
+| Query parameter | Type | Default | Description |
+|-----------------|------|---------|-------------|
+| `cursor` | string | — | The `nextCursor` value from the previous response. Omit to start from the beginning. |
+| `limit` | integer | `20` | Number of results per page. Accepted range: `1`–`100`. |
+
+When `nextCursor` is `null`, you have reached the last page.
+
+### Pagination example
+
+```bash
+# First page
+curl "https://www.promptbank.club/api/v1/prompts?limit=50" \
+  -H "Authorization: Bearer pb_live_..."
+
+# Next page — pass the cursor from the previous response
+curl "https://www.promptbank.club/api/v1/prompts?limit=50&cursor=cursor_01j9k2m3n4p5q6r7" \
+  -H "Authorization: Bearer pb_live_..."
+```
+
+## What's next
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/api-reference/authentication">
+    Learn how to create and use API keys to authorize requests.
+  </Card>
+  <Card title="Errors" icon="circle-exclamation" href="/api-reference/errors">
+    Understand error codes and how to handle them.
+  </Card>
+  <Card title="Prompts" icon="file-lines" href="/api-reference/prompts/list">
+    Browse the Prompts API reference.
+  </Card>
+  <Card title="Vaults" icon="vault" href="/api-reference/vaults/list">
+    Browse the Vaults API reference.
+  </Card>
+</CardGroup>
