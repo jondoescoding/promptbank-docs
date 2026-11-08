@@ -1,10 +1,10 @@
 ---
-title: "Create a New Vault — Prompt Bank REST API Reference"
-sidebarTitle: "Create Vault"
+title: "Create vault"
+sidebarTitle: "Create vault"
 description: "POST /api/v1/vaults — create a new vault to organize prompts. Set a name, optional description, and visibility (private, unlisted, or public)."
 ---
 
-Create a new vault to organize your prompts into a focused, shareable collection. You control who can see the vault by setting its `visibility` — keep it `private` for personal use, share a link with `unlisted`, or make it fully `public` for anyone to discover and fork. A successful request returns the newly created vault object with a `201 Created` status.
+Create a vault to group related prompts. You control who can see the vault with its `visibility` setting. Use `private` for personal use, `unlisted` to share a link, or `public` to let others find and fork it. A successful request returns the vault with a `201 Created` status.
 
 ## Endpoint
 
@@ -12,7 +12,7 @@ Create a new vault to organize your prompts into a focused, shareable collection
 POST https://www.promptbank.club/api/v1/vaults
 ```
 
-## Body Parameters
+## Body parameters
 
 <ParamField body="name" type="string" required>
   The display name for the vault. Must be between 1 and 50 characters.
@@ -26,7 +26,7 @@ POST https://www.promptbank.club/api/v1/vaults
   Controls who can access the vault. Accepted values are `private` (only you), `unlisted` (anyone with the link), or `public` (discoverable by all users). Defaults to `private` if omitted.
 </ParamField>
 
-## Request Example
+## Request example
 
 ```bash
 curl -X POST https://www.promptbank.club/api/v1/vaults \
@@ -39,7 +39,7 @@ curl -X POST https://www.promptbank.club/api/v1/vaults \
   }'
 ```
 
-## Response Example
+## Response example
 
 A `201 Created` response is returned on success. The `data` field contains the full vault object.
 

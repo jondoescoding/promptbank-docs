@@ -1,6 +1,6 @@
 ---
-title: "Move a Vault Prompt to Another Vault — Prompt Bank API"
-sidebarTitle: "Move Prompt"
+title: "Move prompt"
+sidebarTitle: "Move prompt"
 description: "Move a prompt from one vault to another you own. POST /api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move — supply targetVaultId in the request body."
 ---
 
@@ -12,7 +12,7 @@ Move a prompt from one of your vaults to another in a single atomic operation. S
 POST https://www.promptbank.club/api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/move
 ```
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="vaultId" type="integer" required>
   The numeric ID of the source vault — the vault the prompt is currently in.
@@ -22,13 +22,13 @@ POST https://www.promptbank.club/api/v1/vaults/{vaultId}/prompts/{vaultPromptId}
   The numeric ID of the vault–prompt membership record. This is the `vaultPromptId` returned when listing prompts in a vault.
 </ParamField>
 
-## Body Parameters
+## Body parameters
 
 <ParamField body="targetVaultId" type="integer" required>
   The numeric ID of the destination vault. Must be at least `1` and must refer to a vault you own.
 </ParamField>
 
-## Request Example
+## Request example
 
 ```bash
 curl -X POST https://www.promptbank.club/api/v1/vaults/7/prompts/55/move \
@@ -39,7 +39,7 @@ curl -X POST https://www.promptbank.club/api/v1/vaults/7/prompts/55/move \
   }'
 ```
 
-## Response Example
+## Response example
 
 A `200 OK` response is returned on success. The `data` field confirms the move and provides the new `vaultPromptId` assigned in the target vault.
 

@@ -1,0 +1,327 @@
+/* Prompt Bank's graphite shell. Keep Mintlify's luma layout and native controls.
+ * Direction: unslop by Damir Sokolovsky (@heydamir), CC BY 4.0.
+ * https://heydamir.design/unslop
+ */
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono-variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  --pb-background: hsl(0 0% 98%);
+  --pb-surface: hsl(0 0% 96%);
+  --pb-raised: hsl(0 0% 92%);
+  --pb-text: hsl(0 0% 10%);
+  --pb-secondary: hsl(0 0% 20%);
+  --pb-muted: hsl(0 0% 40%);
+  --pb-border: hsl(0 0% 0% / 0.08);
+  --pb-border-hover: hsl(0 0% 0% / 0.2);
+  --pb-glass-rgb: 250 250 250;
+  --pb-glass-border: hsl(0 0% 0% / 0.12);
+  --pb-mono: "Geist Mono", ui-monospace, monospace;
+  --sidebar-width: 15rem;
+  /* Luma derives tinted grays from the accent. Brand chrome stays neutral.
+   * These overrides must win over Mintlify's generated inline palette. */
+  --gray-50: 250 250 250 !important;
+  --gray-100: 245 245 245 !important;
+  --gray-200: 235 235 235 !important;
+  --gray-300: 212 212 212 !important;
+  --gray-400: 184 184 184 !important;
+  --gray-500: 115 115 115 !important;
+  --gray-600: 92 92 92 !important;
+  --gray-700: 64 64 64 !important;
+  --gray-800: 26 26 26 !important;
+  --gray-900: 20 20 20 !important;
+  --gray-950: 13 13 13 !important;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 500;
+  --font-weight-extrabold: 500;
+}
+
+html.dark {
+  --pb-background: hsl(0 0% 5%);
+  --pb-surface: hsl(0 0% 8%);
+  --pb-raised: hsl(0 0% 10%);
+  --pb-text: hsl(0 0% 100%);
+  --pb-secondary: hsl(0 0% 96%);
+  --pb-muted: hsl(0 0% 72%);
+  --pb-border: hsl(0 0% 100% / 0.08);
+  --pb-border-hover: hsl(0 0% 100% / 0.2);
+  --pb-glass-rgb: 15 15 15;
+  --pb-glass-border: hsl(0 0% 100% / 0.12);
+}
+
+#body-content,
+#background-color {
+  background: var(--pb-background);
+}
+
+#content-area {
+  color: var(--pb-secondary);
+}
+
+#page-title {
+  color: var(--pb-text);
+  font-size: 1.75rem;
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+#header .eyebrow {
+  display: none;
+}
+
+#header p,
+#content p,
+#content li,
+#content td {
+  color: var(--pb-secondary);
+  letter-spacing: normal;
+}
+
+#header p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--pb-muted);
+}
+
+#content :is(h2, h3, h4, strong, th),
+[data-component-part="card-title"] {
+  color: var(--pb-text);
+  font-weight: 500;
+  letter-spacing: normal;
+}
+
+#content h2 {
+  margin-top: 2.5rem;
+  font-size: 1.25rem;
+}
+
+#content [data-component-part="card-title"] {
+  margin-top: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+#content :is(code, pre, kbd),
+[data-component-part="field-name"],
+[data-component-part="field-meta"],
+[data-search-item="trigger-hint"] {
+  font-family: var(--pb-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+#content :is(code, pre) {
+  font-weight: 400;
+}
+
+/* One yellow action. Navigation and current-page states stay neutral. */
+#topbar-cta-button a {
+  background: #ffff00;
+  border-radius: 8px;
+  color: hsl(0 0% 10%);
+  box-shadow: none;
+  transition: background-color 150ms ease;
+}
+
+#topbar-cta-button a span {
+  color: hsl(0 0% 10%);
+}
+
+#topbar-cta-button a:hover {
+  background: #e6e600;
+  opacity: 1;
+}
+
+#navbar {
+  --background-light: var(--pb-glass-rgb) / 0.62;
+  --background-dark: var(--pb-glass-rgb) / 0.62;
+  --gray-100: 0 0 0 / 0.12 !important;
+  --gray-800: 255 255 255 / 0.12 !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+#navbar nav a,
+[data-search-item="trigger"],
+[data-component-part="theme-preference-menu-trigger"] {
+  border-radius: 8px;
+  letter-spacing: normal;
+}
+
+#navbar nav a[aria-current] {
+  background: var(--pb-raised);
+  color: var(--pb-text);
+  box-shadow: inset 0 1px 0 var(--pb-border);
+}
+
+.sidebar-group-header {
+  color: var(--pb-muted);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.sidebar-group a {
+  min-height: 36px;
+  border-radius: 8px;
+  color: var(--pb-muted);
+  text-shadow: none;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.sidebar-group a:hover,
+.sidebar-group a[aria-current="page"] {
+  color: var(--pb-text);
+  background: var(--pb-surface);
+}
+
+.sidebar-group a[aria-current="page"] {
+  box-shadow: inset 0 1px 0 var(--pb-border);
+  font-weight: 500;
+}
+
+[data-layout-item="toc-item-link"][data-active] {
+  color: var(--pb-text);
+}
+
+#table-of-contents,
+.code-group,
+.tabs {
+  --primary: var(--gray-500);
+  --primary-light: var(--gray-400);
+}
+
+[data-layout-item="toc-indicator"] {
+  background-color: var(--pb-muted);
+}
+
+.card,
+#pagination a {
+  border-color: var(--pb-border);
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: none;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+a.card:hover,
+#pagination a:hover {
+  border-color: var(--pb-border-hover);
+  background: var(--pb-surface);
+  transform: none;
+  box-shadow: none;
+}
+
+[data-component-part="card-icon"] {
+  color: var(--pb-muted);
+  width: 18px;
+  height: 18px;
+}
+
+[data-component-part="card-icon"] svg {
+  background-color: var(--pb-muted);
+  width: 18px;
+  height: 18px;
+}
+
+[data-component-part="card-content"] {
+  color: var(--pb-muted);
+}
+
+/* Code is the content, not another box inside a box. Keep syntax colors. */
+.code-block,
+.code-group {
+  background: var(--pb-surface);
+  border-color: var(--pb-border);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.code-group .code-block,
+.code-block pre {
+  background: transparent;
+  box-shadow: none;
+}
+
+[data-component-part="code-block-root"] {
+  background-color: var(--pb-surface) !important;
+  border-radius: 12px;
+}
+
+.code-group [role="tab"] {
+  font-family: var(--pb-mono);
+}
+
+.code-group [role="tab"][aria-selected="true"] {
+  color: var(--pb-text);
+}
+
+#content :is(th, td),
+#content .field,
+#footer {
+  border-color: var(--pb-border);
+}
+
+[data-component-part="field-name"] {
+  color: var(--pb-text);
+  font-weight: 500;
+}
+
+#content a.link {
+  color: var(--pb-secondary);
+  border-color: var(--pb-border-hover);
+  font-weight: 500;
+}
+
+#content a.link:hover {
+  color: var(--pb-text);
+  border-color: var(--pb-text);
+}
+
+/* Informational notes are quiet; warnings and errors keep their meaning. */
+.callout[data-callout-type="note"] {
+  background: transparent;
+  border-color: var(--pb-border);
+  border-radius: 12px;
+}
+
+.callout[data-callout-type="note"] [data-component-part="callout-content"],
+.callout[data-callout-type="note"] [data-component-part="callout-icon"] svg {
+  color: var(--pb-muted);
+}
+
+#mobile-nav,
+#mobile-nav-content,
+[data-search-item="dialog"],
+.nav-dropdown-content,
+#page-context-menu {
+  background: rgb(var(--pb-glass-rgb) / 0.62);
+  border-color: var(--pb-glass-border);
+  border-radius: 12px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: none;
+}
+
+/* Do not depend on hover to identify controls. */
+#navbar :is(a, button):focus-visible,
+.sidebar-group a:focus-visible,
+#content :is(a, button):focus-visible,
+#pagination a:focus-visible {
+  outline: 2px solid var(--pb-text);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .sidebar-group a,
+  #topbar-cta-button a,
+  #pagination a {
+    transition: none;
+  }
+}

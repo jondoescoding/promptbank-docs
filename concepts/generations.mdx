@@ -1,5 +1,5 @@
 ---
-title: "AI Generations: Queue and Save Media with Prompt Bank"
+title: "Generations"
 sidebarTitle: "Generations"
 description: "Generations let you queue AI image and video creation through the Prompt Bank API. Learn the async generation flow, supported models, and how outputs are saved to vaults."
 ---
@@ -29,7 +29,7 @@ Queuing a generation follows these steps:
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `modelId` | string | Yes | — | The fal.ai model endpoint to run (e.g., `fal-ai/recraft/v4.1/text-to-image`). |
+| `modelId` | string | Yes | — | The API identifier for your model, such as Recraft V4.1. Use the identifier, not the display name. |
 | `prompt` | string | Yes | — | The instruction text for the model. Maximum 100,000 characters. |
 | `generationType` | string | No | `image` | `image` or `video`. |
 | `aspectRatio` | string | No | `1:1` | Output dimensions, e.g. `16:9`, `1:1`, `9:16`, `4:3`. |
@@ -89,4 +89,4 @@ curl -X POST https://www.promptbank.club/api/v1/generations \
 
 ## Next steps
 
-See the [Generate Media guide](/guides/generate-media) for complete examples covering image-to-image, video generation, batch jobs, and how to track your outputs.
+See the [Generate media guide](/guides/generate-media) for complete examples covering image-to-image, video generation, batch jobs, and how to track your outputs.

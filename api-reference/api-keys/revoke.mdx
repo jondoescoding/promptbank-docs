@@ -1,6 +1,6 @@
 ---
-title: "DELETE /api/v1/api-keys/{keyId} — Revoke an API Key"
-sidebarTitle: "Revoke Key"
+title: "Revoke key"
+sidebarTitle: "Revoke key"
 description: "DELETE /api/v1/api-keys/{keyId} — permanently revoke an API key so it can no longer authenticate requests. Browser session required."
 ---
 
@@ -14,10 +14,10 @@ DELETE https://www.promptbank.club/api/v1/api-keys/{keyId}
 
 **Authentication:** SessionAuth — browser session cookie (not an API key)
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="keyId" type="string (UUID)" required>
-  The unique identifier of the API key you want to revoke. You can find this value in the `id` field returned by the [List Keys](/api-reference/api-keys/list) endpoint.
+  The unique identifier of the API key you want to revoke. You can find this value in the `id` field returned by the [List keys](/api-reference/api-keys/list) endpoint.
 </ParamField>
 
 ## Response — 200 OK
@@ -44,5 +44,5 @@ curl -X DELETE https://www.promptbank.club/api/v1/api-keys/f47ac10b-58cc-4372-a5
 </Warning>
 
 <Tip>
-  Follow a **rotate-then-revoke** workflow to avoid downtime: call [Create Key](/api-reference/api-keys/create) to generate a replacement, deploy the new key to all systems that depend on it, verify the new key is working correctly, and only then revoke the old key.
+  Follow a **rotate-then-revoke** workflow to avoid downtime: call [Create key](/api-reference/api-keys/create) to generate a replacement, deploy the new key to all systems that depend on it, verify the new key is working correctly, and only then revoke the old key.
 </Tip>

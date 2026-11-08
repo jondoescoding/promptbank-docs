@@ -1,6 +1,6 @@
 ---
-title: "GET /api/v1/vaults — Retrieve All Your Prompt Vaults"
-sidebarTitle: "List Vaults"
+title: "List vaults"
+sidebarTitle: "List vaults"
 description: "GET /api/v1/vaults — retrieve all vaults owned by the authenticated user, including system vaults. Returns an array of vault objects."
 ---
 
@@ -14,14 +14,14 @@ GET https://www.promptbank.club/api/v1/vaults
 
 No query parameters are required. The response always contains the complete list of your vaults; pagination is not needed because the set is scoped to a single user.
 
-## Request Example
+## Request example
 
 ```bash
 curl https://www.promptbank.club/api/v1/vaults \
   -H 'Authorization: Bearer pb_live_...'
 ```
 
-## Response Example
+## Response example
 
 The `data` field contains an array of vault objects ordered by creation date, newest first.
 
@@ -61,7 +61,7 @@ The `data` field contains an array of vault objects ordered by creation date, ne
 }
 ```
 
-### Vault Object Fields
+### Vault object fields
 
 | Field | Type | Description |
 |---|---|---|
