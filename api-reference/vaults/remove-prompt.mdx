@@ -1,13 +1,13 @@
 ---
-title: "DELETE Vault Prompt — Remove a Prompt from a Vault"
-sidebarTitle: "Remove Prompt"
+title: "Remove prompt"
+sidebarTitle: "Remove prompt"
 description: "DELETE /api/v1/vaults/{vaultId}/prompts/{vaultPromptId} — remove a prompt from a vault. The prompt record itself is not deleted from your account."
 ---
 
 Remove a prompt from a vault by targeting its vault–prompt membership record. This operation only severs the link between the prompt and the vault — the underlying prompt record remains in your account and can be added to any other vault at any time.
 
 <Note>
-  This endpoint removes the prompt from the vault, not from your account. The prompt continues to exist and is accessible via the Prompts API or within any other vault it belongs to. To permanently delete a prompt, use the Delete Prompt endpoint instead.
+  This endpoint removes the prompt from the vault, not from your account. The prompt continues to exist and is accessible via the Prompts API or within any other vault it belongs to. To permanently delete a prompt, use the Delete prompt endpoint instead.
 </Note>
 
 ## Endpoint
@@ -16,7 +16,7 @@ Remove a prompt from a vault by targeting its vault–prompt membership record. 
 DELETE https://www.promptbank.club/api/v1/vaults/{vaultId}/prompts/{vaultPromptId}
 ```
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="vaultId" type="integer" required>
   The numeric ID of the vault you want to remove the prompt from.
@@ -26,14 +26,14 @@ DELETE https://www.promptbank.club/api/v1/vaults/{vaultId}/prompts/{vaultPromptI
   The numeric ID of the vault–prompt membership record. This is the `vaultPromptId` field returned when listing prompts in a vault — it is distinct from the prompt's own `id`.
 </ParamField>
 
-## Request Example
+## Request example
 
 ```bash
 curl -X DELETE https://www.promptbank.club/api/v1/vaults/7/prompts/55 \
   -H 'Authorization: Bearer pb_live_...'
 ```
 
-## Response Example
+## Response example
 
 A `200 OK` response is returned on success.
 

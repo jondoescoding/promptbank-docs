@@ -1,6 +1,6 @@
 ---
-title: "POST /api/v1/uploads/images — Upload a Prompt Image"
-sidebarTitle: "Upload Image"
+title: "Upload image"
+sidebarTitle: "Upload image"
 description: "POST /api/v1/uploads/images — request a signed upload URL for PNG, JPEG, WebP, or GIF up to 10 MB, then PUT bytes directly to storage."
 ---
 
@@ -20,7 +20,7 @@ POST https://www.promptbank.club/api/v1/uploads/images
 
 Call this endpoint with the content type and byte size of the file you intend to upload. Prompt Bank validates the parameters, provisions a storage slot, and returns a signed URL that authorises a single upload of exactly that file.
 
-### Request Body
+### Request body
 
 <ParamField body="contentType" type="string" required>
   The MIME type of the image you are uploading. Accepted values:

@@ -1,5 +1,5 @@
 ---
-title: "Prompt Bank API Error Codes and Troubleshooting"
+title: "Errors"
 sidebarTitle: "Errors"
 description: "Reference for Prompt Bank API error responses. Covers HTTP status codes 400, 401, and 404, the error response format, and how to handle each error type."
 ---
@@ -81,7 +81,7 @@ When the Prompt Bank API cannot fulfill a request it returns an error response. 
 
     **How to fix:**
     1. Double-check the resource ID in the URL path.
-    2. Confirm the resource still exists by listing the collection (e.g. `GET /api/v1/prompts`).
+    2. Confirm the resource still exists with a list request, such as `GET /api/v1/prompts`.
     3. Ensure you are using the API key for the account that owns the resource.
 
     **Example:**

@@ -1,6 +1,6 @@
 ---
-title: "POST /api/v1/vaults/{vaultId}/prompts — Add Prompts"
-sidebarTitle: "Add Prompts"
+title: "Add prompts"
+sidebarTitle: "Add prompts"
 description: "POST /api/v1/vaults/{vaultId}/prompts — add up to 50 existing prompts to a vault in a single request by passing an array of prompt IDs."
 ---
 
@@ -12,19 +12,19 @@ Add one or more existing prompts to a vault in a single request. You supply an a
 POST https://www.promptbank.club/api/v1/vaults/{vaultId}/prompts
 ```
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="vaultId" type="integer" required>
   The numeric ID of the vault you want to add prompts to.
 </ParamField>
 
-## Body Parameters
+## Body parameters
 
 <ParamField body="promptIds" type="integer[]" required>
   An array of prompt IDs to add to the vault. Must contain between 1 and 50 integer values. Each ID must reference a prompt that exists in your account.
 </ParamField>
 
-## Request Example
+## Request example
 
 ```bash
 curl -X POST https://www.promptbank.club/api/v1/vaults/7/prompts \
@@ -35,7 +35,7 @@ curl -X POST https://www.promptbank.club/api/v1/vaults/7/prompts \
   }'
 ```
 
-## Response Example
+## Response example
 
 A `201 Created` response is returned on success. The `data` field summarises how many prompts were added and includes the updated prompt count for the vault.
 

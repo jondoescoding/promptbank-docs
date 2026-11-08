@@ -1,6 +1,6 @@
 ---
-title: "GET /api/v1/api-keys — List All API Keys for Your Account"
-sidebarTitle: "List Keys"
+title: "List keys"
+sidebarTitle: "List keys"
 description: "GET /api/v1/api-keys — list all API keys for your account. Browser session required. Returns metadata only — never the raw key values."
 ---
 
@@ -19,7 +19,7 @@ GET https://www.promptbank.club/api/v1/api-keys
 The response is an array of `ApiKey` objects.
 
 <ResponseField name="id" type="string (UUID)">
-  The unique identifier for the API key. Use this value as the `keyId` path parameter when calling the [Reveal Key](/api-reference/api-keys/reveal) or [Revoke Key](/api-reference/api-keys/revoke) endpoints.
+  The unique identifier for the API key. Use this value as the `keyId` path parameter when calling the [Reveal key](/api-reference/api-keys/reveal) or [Revoke key](/api-reference/api-keys/revoke) endpoints.
 </ResponseField>
 
 <ResponseField name="name" type="string">
@@ -50,7 +50,7 @@ The response is an array of `ApiKey` objects.
   The timestamp at which the key was created.
 </ResponseField>
 
-## Example Response
+## Example response
 
 ```json
 {

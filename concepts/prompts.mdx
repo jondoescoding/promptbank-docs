@@ -1,5 +1,5 @@
 ---
-title: "Prompts: Reusable AI Instructions in Prompt Bank"
+title: "Prompts"
 sidebarTitle: "Prompts"
 description: "Prompts are the core unit in Prompt Bank. Learn about prompt types (text, image, video), fields like modelId and aspectRatio, and how prompts connect to vaults."
 ---
@@ -25,7 +25,7 @@ Choosing the correct type keeps your vault organized and lets the API surface th
 | `title` | string | Human-readable name for the prompt. Required. Maximum 120 characters. |
 | `prompt` | string | The actual instruction text sent to the model. Required. Maximum 15,000 characters. |
 | `promptType` | string | One of `image`, `text`, or `video`. Defaults to `text`. |
-| `modelId` | string | The fal.ai model endpoint to use for generation (e.g., `fal-ai/recraft/v4.1/text-to-image`). Must match the pattern `fal-ai/…`. Required when `promptType` is `image` or `video`. |
+| `modelId` | string | The API identifier for your model, such as Recraft V4.1. Must match `fal-ai/…`. Required when `promptType` is `image` or `video`. |
 | `aspectRatio` | string | Desired output dimensions, such as `16:9`, `1:1`, or `9:16`. Maximum 20 characters. |
 | `platform` | string | Optional label for the target platform or use-case (e.g., `instagram`, `youtube`). |
 | `imageUrl` | string (URI) | A URL to the primary image associated with this prompt — typically the last generated output or a reference image. |
@@ -83,4 +83,4 @@ The following shows a complete image prompt as returned by the API:
 
 ## Next steps
 
-See the [Manage Prompts guide](/guides/manage-prompts) for step-by-step instructions on creating, updating, filtering, and deleting prompts via the API.
+See the [Manage prompts guide](/guides/manage-prompts) for step-by-step instructions on creating, updating, filtering, and deleting prompts via the API.

@@ -1,6 +1,6 @@
 ---
-title: "GET /api/v1/api-keys/{keyId} — Reveal an API Key"
-sidebarTitle: "Reveal Key"
+title: "Reveal key"
+sidebarTitle: "Reveal key"
 description: "GET /api/v1/api-keys/{keyId} — retrieve the stored secret for an API key you own. Browser session required. Never log or publish this response."
 ---
 
@@ -14,10 +14,10 @@ GET https://www.promptbank.club/api/v1/api-keys/{keyId}
 
 **Authentication:** SessionAuth — browser session cookie (not an API key)
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="keyId" type="string (UUID)" required>
-  The unique identifier of the API key you want to reveal. You can find this value in the `id` field returned by the [List Keys](/api-reference/api-keys/list) endpoint.
+  The unique identifier of the API key you want to reveal. You can find this value in the `id` field returned by the [List keys](/api-reference/api-keys/list) endpoint.
 </ParamField>
 
 ## Response — 200 OK

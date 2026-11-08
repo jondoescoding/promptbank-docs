@@ -1,6 +1,6 @@
 ---
-title: "DELETE /api/v1/vaults/{vaultId} — Delete Your Vault"
-sidebarTitle: "Delete Vault"
+title: "Delete vault"
+sidebarTitle: "Delete vault"
 description: "DELETE /api/v1/vaults/{vaultId} — permanently delete a vault by ID. Prompts inside the vault are not deleted, only removed from the vault."
 ---
 
@@ -20,20 +20,20 @@ Permanently delete a vault you own by its numeric ID. Deleting a vault removes t
 DELETE https://www.promptbank.club/api/v1/vaults/{vaultId}
 ```
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="vaultId" type="integer" required>
   The numeric ID of the vault to delete.
 </ParamField>
 
-## Request Example
+## Request example
 
 ```bash
 curl -X DELETE https://www.promptbank.club/api/v1/vaults/7 \
   -H 'Authorization: Bearer pb_live_...'
 ```
 
-## Response Example
+## Response example
 
 A `200 OK` response is returned on success.
 

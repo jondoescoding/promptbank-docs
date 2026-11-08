@@ -1,6 +1,6 @@
 ---
-title: "POST /api/v1/api-keys — Create a New Prompt Bank API Key"
-sidebarTitle: "Create Key"
+title: "Create key"
+sidebarTitle: "Create key"
 description: "POST /api/v1/api-keys — create a new API key for your account. Browser session required. The raw key is returned once and cannot be retrieved again."
 ---
 
@@ -14,7 +14,7 @@ POST https://www.promptbank.club/api/v1/api-keys
 
 **Authentication:** SessionAuth — browser session cookie (not an API key)
 
-## Request Body
+## Request body
 
 <ParamField body="name" type="string" required>
   A descriptive label for the key, between 1 and 80 characters. Choose a name that identifies the system or purpose the key is used for, e.g. `"Production Backend"` or `"GitHub Actions CI"`.
@@ -27,7 +27,7 @@ POST https://www.promptbank.club/api/v1/api-keys
 </ResponseField>
 
 <ResponseField name="data.apiKey" type="object">
-  Metadata about the newly created key. Contains the same fields as a key object returned by the [List Keys](/api-reference/api-keys/list) endpoint: `id`, `name`, `keyPrefix`, `scopes`, `lastUsedAt`, `revokedAt`, `expiresAt`, and `createdAt`.
+  Metadata about the newly created key. Contains the same fields as a key object returned by the [List keys](/api-reference/api-keys/list) endpoint: `id`, `name`, `keyPrefix`, `scopes`, `lastUsedAt`, `revokedAt`, `expiresAt`, and `createdAt`.
 </ResponseField>
 
 ## Example

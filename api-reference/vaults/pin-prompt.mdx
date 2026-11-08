@@ -1,6 +1,6 @@
 ---
-title: "Pin and Unpin Prompts in a Vault — Prompt Bank API"
-sidebarTitle: "Pin Prompt"
+title: "Pin prompt"
+sidebarTitle: "Pin prompt"
 description: "Pin or unpin any prompt in a vault to control its listing order. POST pins the prompt to the top; DELETE removes the pin. Both return 200 OK."
 ---
 
@@ -13,7 +13,7 @@ POST   https://www.promptbank.club/api/v1/vaults/{vaultId}/prompts/{vaultPromptI
 DELETE https://www.promptbank.club/api/v1/vaults/{vaultId}/prompts/{vaultPromptId}/pin
 ```
 
-## Path Parameters
+## Path parameters
 
 Both endpoints share the same path parameters.
 
@@ -25,18 +25,18 @@ Both endpoints share the same path parameters.
   The numeric ID of the vault–prompt membership record. This is the `vaultPromptId` field returned when listing prompts in a vault.
 </ParamField>
 
-## Pin a Prompt
+## Pin a prompt
 
 Send a `POST` request to pin the prompt. If the prompt is already pinned, the request is a no-op and returns `200 OK`.
 
-### Request Example
+### Request example
 
 ```bash
 curl -X POST https://www.promptbank.club/api/v1/vaults/7/prompts/55/pin \
   -H 'Authorization: Bearer pb_live_...'
 ```
 
-### Response Example
+### Response example
 
 ```json
 {
@@ -48,18 +48,18 @@ curl -X POST https://www.promptbank.club/api/v1/vaults/7/prompts/55/pin \
 }
 ```
 
-## Unpin a Prompt
+## Unpin a prompt
 
 Send a `DELETE` request to unpin the prompt and return it to the standard sort order. If the prompt is already unpinned, the request is a no-op and returns `200 OK`.
 
-### Request Example
+### Request example
 
 ```bash
 curl -X DELETE https://www.promptbank.club/api/v1/vaults/7/prompts/55/pin \
   -H 'Authorization: Bearer pb_live_...'
 ```
 
-### Response Example
+### Response example
 
 ```json
 {

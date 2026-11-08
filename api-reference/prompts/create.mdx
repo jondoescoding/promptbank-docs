@@ -1,16 +1,16 @@
 ---
-title: "Create Prompt — POST /api/v1/prompts | Prompt Bank"
-sidebarTitle: "Create Prompt"
-description: "Create a text, image, or video prompt. Requires a title and prompt text. For image and video types, a valid fal-ai/ modelId is also required."
+title: "Create prompt"
+sidebarTitle: "Create prompt"
+description: "Save a reusable prompt. Set its title and instructions, then choose a model for image or video prompts."
 ---
 
-Create a new prompt in your account. Every prompt requires a title and the prompt text itself. For `image` and `video` prompt types, you must also supply a `modelId` in the `fal-ai/` namespace so the platform knows which model to use when generating output.
+Create a prompt in your account. Supply a title and the prompt text. For `image` and `video` prompts, set `modelId` to the API identifier for your chosen model.
 
 <Note>
   **POST** `https://www.promptbank.club/api/v1/prompts`
 </Note>
 
-## Request Body
+## Request body
 
 <ParamField body="title" type="string" required>
   A human-readable name for the prompt. Must be between **1** and **120** characters.
@@ -29,7 +29,7 @@ Create a new prompt in your account. Every prompt requires a title and the promp
 </ParamField>
 
 <ParamField body="modelId" type="string">
-  The fal.ai model identifier to use for generation. Must match the pattern `^fal-ai/.+` — for example `fal-ai/recraft/v4.1/text-to-image`. **Required when `promptType` is `image` or `video`.**
+  The API identifier for your model, such as Recraft V4.1. The value must match `^fal-ai/.+`. **Required when `promptType` is `image` or `video`.**
 </ParamField>
 
 <ParamField body="aspectRatio" type="string">
@@ -48,7 +48,7 @@ Create a new prompt in your account. Every prompt requires a title and the promp
   An array of up to **10** URIs pointing to reference images or videos that provide visual context for generation.
 </ParamField>
 
-## Example Request
+## Example request
 
 ```bash
 curl -X POST https://www.promptbank.club/api/v1/prompts \
@@ -65,7 +65,7 @@ curl -X POST https://www.promptbank.club/api/v1/prompts \
   }'
 ```
 
-## Example Response
+## Example response
 
 ```json
 {

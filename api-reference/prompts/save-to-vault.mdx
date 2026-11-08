@@ -1,6 +1,6 @@
 ---
-title: "Save Prompt to Vault — POST /api/v1/prompts/{id}/save"
-sidebarTitle: "Save to Vault"
+title: "Save to vault"
+sidebarTitle: "Save to vault"
 description: "Add an existing prompt to a vault by vault ID. A prompt can belong to many vaults at once — saving to a new vault never removes it from existing vaults."
 ---
 
@@ -10,19 +10,19 @@ Add an existing prompt to a vault so you can organise and share it alongside rel
   **POST** `https://www.promptbank.club/api/v1/prompts/{promptId}/save`
 </Note>
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="promptId" type="integer" required>
   The unique numeric ID of the prompt you want to save to a vault.
 </ParamField>
 
-## Request Body
+## Request body
 
 <ParamField body="vaultId" type="integer" required>
   The ID of the vault to add the prompt to.
 </ParamField>
 
-## Example Request
+## Example request
 
 ```bash
 curl -X POST https://www.promptbank.club/api/v1/prompts/42/save \
@@ -33,7 +33,7 @@ curl -X POST https://www.promptbank.club/api/v1/prompts/42/save \
   }'
 ```
 
-## Example Response
+## Example response
 
 ```json
 {

@@ -1,6 +1,6 @@
 ---
-title: "Retrieve a Prompt — GET /api/v1/prompts/{promptId}"
-sidebarTitle: "Get Prompt"
+title: "Get prompt"
+sidebarTitle: "Get prompt"
 description: "Retrieve a single prompt by its numeric ID. Returns the full prompt object including title, prompt text, type, status, images, and vault memberships."
 ---
 
@@ -10,20 +10,20 @@ Fetch the complete details of a single prompt using its unique numeric ID. The r
   **GET** `https://www.promptbank.club/api/v1/prompts/{promptId}`
 </Note>
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="promptId" type="integer" required>
   The unique numeric ID of the prompt you want to retrieve.
 </ParamField>
 
-## Example Request
+## Example request
 
 ```bash
 curl https://www.promptbank.club/api/v1/prompts/42 \
   -H 'Authorization: Bearer pb_live_...'
 ```
 
-## Example Response
+## Example response
 
 ```json
 {

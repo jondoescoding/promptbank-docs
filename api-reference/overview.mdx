@@ -1,5 +1,5 @@
 ---
-title: "Prompt Bank REST API Overview and Base URL"
+title: "Overview"
 sidebarTitle: "Overview"
 description: "Overview of the Prompt Bank REST API. Covers base URL, versioning, request format, the { data, error } response envelope, and pagination."
 ---
@@ -20,7 +20,7 @@ Use this as the root for all paths shown in this documentation. For example, the
 
 The API is versioned with a `v1` prefix in every path. When breaking changes are introduced, a new version prefix (e.g. `v2`) will be released. The `v1` prefix will remain available during any transition period so existing integrations keep working.
 
-## Request Format
+## Request format
 
 Send request bodies as JSON. Set the `Content-Type` header to `application/json` on all requests that include a body (POST, PUT, PATCH).
 
@@ -31,7 +31,7 @@ curl -X POST https://www.promptbank.club/api/v1/prompts \
   -d '{"title": "My Prompt", "prompt": "You are a helpful assistant.", "promptType": "text"}'
 ```
 
-## Response Envelope
+## Response envelope
 
 Every response — success or error — returns a JSON object with two top-level keys:
 

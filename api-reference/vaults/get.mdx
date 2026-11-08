@@ -1,6 +1,6 @@
 ---
-title: "Retrieve a Single Vault — Prompt Bank API Reference"
-sidebarTitle: "Get Vault"
+title: "Get vault"
+sidebarTitle: "Get vault"
 description: "GET /api/v1/vaults/{vaultId} — fetch a single vault by its numeric ID. Returns vault details including visibility, prompt count, and system status."
 ---
 
@@ -12,20 +12,20 @@ Fetch the full details of a single vault by its numeric ID. You can retrieve any
 GET https://www.promptbank.club/api/v1/vaults/{vaultId}
 ```
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="vaultId" type="integer" required>
   The numeric ID of the vault you want to retrieve.
 </ParamField>
 
-## Request Example
+## Request example
 
 ```bash
 curl https://www.promptbank.club/api/v1/vaults/7 \
   -H 'Authorization: Bearer pb_live_...'
 ```
 
-## Response Example
+## Response example
 
 ```json
 {
@@ -47,7 +47,7 @@ curl https://www.promptbank.club/api/v1/vaults/7 \
 }
 ```
 
-### Response Fields
+### Response fields
 
 | Field | Type | Description |
 |---|---|---|

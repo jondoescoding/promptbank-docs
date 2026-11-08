@@ -1,6 +1,6 @@
 ---
-title: "Update Prompt — PATCH /api/v1/prompts/{promptId}"
-sidebarTitle: "Update Prompt"
+title: "Update prompt"
+sidebarTitle: "Update prompt"
 description: "Partially update a prompt with PATCH. Send only the fields you want to change — omitted fields stay untouched. Returns the full updated prompt object."
 ---
 
@@ -10,13 +10,13 @@ Partially update an existing prompt. You only need to include the fields you wan
   **PATCH** `https://www.promptbank.club/api/v1/prompts/{promptId}`
 </Note>
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="promptId" type="integer" required>
   The unique numeric ID of the prompt you want to update.
 </ParamField>
 
-## Request Body
+## Request body
 
 All body fields are optional. Send only what you want to change.
 
@@ -37,7 +37,7 @@ All body fields are optional. Send only what you want to change.
 </ParamField>
 
 <ParamField body="modelId" type="string">
-  Updated fal.ai model identifier. Must match `^fal-ai/.+` — for example `fal-ai/recraft/v4.1/text-to-image`. Required if you are changing `promptType` to `image` or `video` and a `modelId` is not already set.
+  The API identifier for your model, such as Recraft V4.1. The value must match `^fal-ai/.+`. Required if you change `promptType` to `image` or `video` and no `modelId` is set.
 </ParamField>
 
 <ParamField body="aspectRatio" type="string">
@@ -56,7 +56,7 @@ All body fields are optional. Send only what you want to change.
   Replacement array of up to **10** reference media URIs. This overwrites the existing list entirely.
 </ParamField>
 
-## Example Request
+## Example request
 
 ```bash
 curl -X PATCH https://www.promptbank.club/api/v1/prompts/42 \
@@ -68,7 +68,7 @@ curl -X PATCH https://www.promptbank.club/api/v1/prompts/42 \
   }'
 ```
 
-## Example Response
+## Example response
 
 ```json
 {

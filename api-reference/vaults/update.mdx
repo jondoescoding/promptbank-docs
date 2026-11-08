@@ -1,6 +1,6 @@
 ---
-title: "Update Vault Properties — Prompt Bank API Reference"
-sidebarTitle: "Update Vault"
+title: "Update vault"
+sidebarTitle: "Update vault"
 description: "PATCH /api/v1/vaults/{vaultId} — update a vault's name, description, or visibility. All fields are optional; send only the properties you want to change."
 ---
 
@@ -12,13 +12,13 @@ Update one or more properties of an existing vault you own. This endpoint uses p
 PATCH https://www.promptbank.club/api/v1/vaults/{vaultId}
 ```
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="vaultId" type="integer" required>
   The numeric ID of the vault to update.
 </ParamField>
 
-## Body Parameters
+## Body parameters
 
 All body parameters are optional. Include only the fields you want to update.
 
@@ -34,7 +34,7 @@ All body parameters are optional. Include only the fields you want to update.
   The new visibility setting. Accepted values are `private`, `unlisted`, or `public`.
 </ParamField>
 
-## Request Example
+## Request example
 
 This example updates only the `visibility` of vault `7`, leaving its name and description unchanged.
 
@@ -47,7 +47,7 @@ curl -X PATCH https://www.promptbank.club/api/v1/vaults/7 \
   }'
 ```
 
-## Response Example
+## Response example
 
 A `200 OK` response is returned on success. The `data` field contains the complete updated vault object.
 

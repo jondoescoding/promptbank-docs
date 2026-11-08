@@ -1,6 +1,6 @@
 ---
-title: "POST /api/v1/generations — Queue an AI Generation"
-sidebarTitle: "Queue Generation"
+title: "Queue generation"
+sidebarTitle: "Queue generation"
 description: "POST /api/v1/generations — queue an AI image or video generation. Requires prompts:write scope. Output is saved asynchronously to a vault."
 ---
 
@@ -14,10 +14,10 @@ POST https://www.promptbank.club/api/v1/generations
 
 **Required scope:** `prompts:write`
 
-## Request Body
+## Request body
 
 <ParamField body="modelId" type="string" required>
-  The fal.ai model endpoint ID to use for this generation. For example: `fal-ai/recraft/v4.1/text-to-image`. You can find supported model IDs in your Prompt Bank dashboard or in the [fal.ai model library](https://fal.ai/models).
+  The API identifier for your model, such as Recraft V4.1. Use the identifier in API requests, not the display name. You can find model identifiers in the [fal.ai model library](https://fal.ai/models).
 </ParamField>
 
 <ParamField body="prompt" type="string" required>
@@ -37,7 +37,7 @@ POST https://www.promptbank.club/api/v1/generations
 </ParamField>
 
 <ParamField body="imageInput" type="string">
-  A URI pointing to a source image for image-to-image generations. Must be a publicly accessible URL or a Prompt Bank upload URL obtained from the [Upload Image](/api-reference/uploads/images) endpoint.
+  A URI pointing to a source image for image-to-image generations. Must be a publicly accessible URL or a Prompt Bank upload URL obtained from the [Upload image](/api-reference/uploads/images) endpoint.
 </ParamField>
 
 <ParamField body="imageInputs" type="array">

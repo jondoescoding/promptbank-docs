@@ -2,12 +2,35 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "Prompt Bank",
   "theme": "luma",
+  "appearance": {
+    "default": "dark"
+  },
   "colors": {
     "primary": "#ffff00",
     "light": "#767600",
     "dark": "#ffff00"
   },
   "favicon": "/favicon.svg",
+  "background": {
+    "color": {
+      "light": "#fafafa",
+      "dark": "#0d0d0d"
+    }
+  },
+  "fonts": {
+    "body": {
+      "family": "Geist",
+      "source": "/fonts/Geist-variable.woff2",
+      "format": "woff2",
+      "weight": 400
+    },
+    "heading": {
+      "family": "Geist",
+      "source": "/fonts/Geist-variable.woff2",
+      "format": "woff2",
+      "weight": 500
+    }
+  },
   "navbar": {
     "primary": {
       "type": "button",
@@ -21,7 +44,7 @@
         "tab": "Documentation",
         "groups": [
           {
-            "group": "Get Started",
+            "group": "Get started",
             "pages": [
               "introduction",
               "quickstart",
@@ -29,7 +52,7 @@
             ]
           },
           {
-            "group": "Core Concepts",
+            "group": "Core concepts",
             "pages": [
               "concepts/prompts",
               "concepts/vaults",
@@ -48,7 +71,7 @@
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "API reference",
         "groups": [
           {
             "group": "Overview",
@@ -98,7 +121,7 @@
             ]
           },
           {
-            "group": "API Keys",
+            "group": "API keys",
             "pages": [
               "api-reference/api-keys/list",
               "api-reference/api-keys/create",

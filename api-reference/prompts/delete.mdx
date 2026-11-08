@@ -1,6 +1,6 @@
 ---
-title: "Delete Prompt — DELETE /api/v1/prompts/{promptId}"
-sidebarTitle: "Delete Prompt"
+title: "Delete prompt"
+sidebarTitle: "Delete prompt"
 description: "Permanently delete a prompt by ID. Removes it from all vaults it belongs to. Deletion is irreversible — there is no way to recover a deleted prompt."
 ---
 
@@ -14,20 +14,20 @@ Permanently delete a prompt from your account by its numeric ID. When a prompt i
   **DELETE** `https://www.promptbank.club/api/v1/prompts/{promptId}`
 </Note>
 
-## Path Parameters
+## Path parameters
 
 <ParamField path="promptId" type="integer" required>
   The unique numeric ID of the prompt you want to delete.
 </ParamField>
 
-## Example Request
+## Example request
 
 ```bash
 curl -X DELETE https://www.promptbank.club/api/v1/prompts/42 \
   -H 'Authorization: Bearer pb_live_...'
 ```
 
-## Example Response
+## Example response
 
 ```json
 {
